@@ -8608,108 +8608,197 @@ const ApplicationPage = () => {
 };
 
 const HomePopupModal = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [activePopup, setActivePopup] = useState<'none' | 'first' | 'second'>('none');
+  const overlayRef = React.useRef<HTMLDivElement>(null);
+
+  const isPopupAllowed = (storageKey: string) => {
+    try {
+      const hideUntil = localStorage.getItem(storageKey);
+      return !hideUntil || Date.now() > Number(hideUntil);
+    } catch {
+      return true;
+    }
+  };
 
   useEffect(() => {
-    try {
-      const hideUntil = localStorage.getItem('hide_home_popup_until');
-      if (!hideUntil || Date.now() > Number(hideUntil)) {
-        setIsOpen(true);
-      }
-    } catch {
-      setIsOpen(true);
+    if (isPopupAllowed('hide_home_popup_until')) {
+      setActivePopup('first');
+    } else if (isPopupAllowed('hide_home_popup_2_until')) {
+      setActivePopup('second');
     }
   }, []);
 
-  const handleClose = () => {
-    setIsOpen(false);
-  };
+  useEffect(() => {
+    if (activePopup === 'second' && overlayRef.current) {
+      overlayRef.current.scrollTop = 0;
+    }
+  }, [activePopup]);
 
-  const handleHideToday = () => {
+  const saveHideToday = (storageKey: string) => {
     try {
       const expiry = new Date();
       expiry.setHours(23, 59, 59, 999);
-      localStorage.setItem('hide_home_popup_until', expiry.getTime().toString());
+      localStorage.setItem(storageKey, expiry.getTime().toString());
     } catch {
       // ignore
     }
-    setIsOpen(false);
   };
 
-  if (!isOpen) return null;
+  const handleCloseFirst = () => {
+    if (isPopupAllowed('hide_home_popup_2_until')) {
+      setActivePopup('second');
+    } else {
+      setActivePopup('none');
+    }
+  };
+
+  const handleHideTodayFirst = () => {
+    saveHideToday('hide_home_popup_until');
+    handleCloseFirst();
+  };
+
+  const handleCloseSecond = () => {
+    setActivePopup('none');
+  };
+
+  const handleHideTodaySecond = () => {
+    saveHideToday('hide_home_popup_2_until');
+    setActivePopup('none');
+  };
 
   return (
     <AnimatePresence>
-      {isOpen && (
-        <div 
+      {activePopup !== 'none' && (
+        <motion.div
+          ref={overlayRef}
+          key="home-popup-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
           className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto"
-          onClick={handleClose}
+          onClick={activePopup === 'first' ? handleCloseFirst : handleCloseSecond}
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 15 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 15 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[520px] lg:max-w-[640px] xl:max-w-[660px] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 my-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Top Close Icon */}
-            <button
-              type="button"
-              onClick={handleClose}
-              className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-slate-900/50 hover:bg-slate-900/75 text-white flex items-center justify-center transition-all backdrop-blur-xs cursor-pointer shadow-md"
-              aria-label="닫기"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            {/* Popup Image Area */}
-            <a
-              href={NAVER_PLACE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full block overflow-hidden group relative"
-            >
-              <img
-                src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1790737575/ChatGPT_%EC%9D%B4%EB%AF%B8%EC%A7%80_2026%EB%85%84_9%EC%9B%94_30%EC%9D%BC_%EC%98%A4%EC%A0%84_11_59_41_k0bezn.png"
-                alt="창원성범죄심리상담센터 안내"
-                className="w-full h-auto block transition-transform duration-300 group-hover:scale-[1.01]"
-                referrerPolicy="no-referrer"
-              />
-            </a>
-
-            {/* CTA Button: 상담예약하러 가기 */}
-            <div className="p-3 sm:p-4 pb-2 bg-white">
-              <a
-                href={NAVER_PLACE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3 sm:py-3.5 px-4 bg-[#4F46E5] hover:bg-[#4338ca] text-white font-bold text-sm sm:text-base rounded-2xl transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 group active:scale-[0.98]"
+          <AnimatePresence mode="wait">
+            {activePopup === 'first' && (
+              <motion.div
+                key="first-popup"
+                initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+                className="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[520px] lg:max-w-[640px] xl:max-w-[660px] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 my-auto"
+                onClick={(e) => e.stopPropagation()}
               >
-                상담예약하러 가기
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </a>
-            </div>
+                {/* Top Close Icon */}
+                <button
+                  type="button"
+                  onClick={handleCloseFirst}
+                  className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-slate-900/50 hover:bg-slate-900/75 text-white flex items-center justify-center transition-all backdrop-blur-xs cursor-pointer shadow-md"
+                  aria-label="닫기"
+                >
+                  <X className="w-4 h-4" />
+                </button>
 
-            {/* Bottom Bar: 오늘 하루 보지 않기 & 창 닫기 */}
-            <div className="px-4 py-2.5 sm:py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <button
-                type="button"
-                onClick={handleHideToday}
-                className="hover:text-slate-900 transition-colors flex items-center gap-1.5 cursor-pointer py-1 font-medium"
+                {/* Popup Image Area */}
+                <a
+                  href={NAVER_PLACE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full block overflow-hidden group relative"
+                >
+                  <img
+                    src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1790737575/ChatGPT_%EC%9D%B4%EB%AF%B8%EC%A7%80_2026%EB%85%84_9%EC%9B%94_30%EC%9D%BC_%EC%98%A4%EC%A0%84_11_59_41_k0bezn.png"
+                    alt="창원성범죄심리상담센터 안내"
+                    className="w-full h-auto block transition-transform duration-300 group-hover:scale-[1.01]"
+                    referrerPolicy="no-referrer"
+                  />
+                </a>
+
+                {/* CTA Button: 상담예약하러 가기 */}
+                <div className="p-3 sm:p-4 pb-2 bg-white">
+                  <a
+                    href={NAVER_PLACE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 sm:py-3.5 px-4 bg-[#4F46E5] hover:bg-[#4338ca] text-white font-bold text-sm sm:text-base rounded-2xl transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 group active:scale-[0.98]"
+                  >
+                    상담예약하러 가기
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </a>
+                </div>
+
+                {/* Bottom Bar: 오늘 하루 보지 않기 & 창 닫기 */}
+                <div className="px-4 py-2.5 sm:py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                  <button
+                    type="button"
+                    onClick={handleHideTodayFirst}
+                    className="hover:text-slate-900 transition-colors flex items-center gap-1.5 cursor-pointer py-1 font-medium"
+                  >
+                    오늘 하루 보지 않기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCloseFirst}
+                    className="font-bold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-slate-200/60"
+                  >
+                    창 닫기
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {activePopup === 'second' && (
+              <motion.div
+                key="second-popup"
+                initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+                className="relative w-full max-w-[340px] sm:max-w-[400px] md:max-w-[480px] lg:max-w-[560px] xl:max-w-[580px] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden my-auto"
+                onClick={(e) => e.stopPropagation()}
               >
-                오늘 하루 보지 않기
-              </button>
-              <button
-                type="button"
-                onClick={handleClose}
-                className="font-bold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-slate-200/60"
-              >
-                창 닫기
-              </button>
-            </div>
-          </motion.div>
-        </div>
+                {/* Top Close Icon */}
+                <button
+                  type="button"
+                  onClick={handleCloseSecond}
+                  className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-slate-900/50 hover:bg-slate-900/75 text-white flex items-center justify-center transition-all backdrop-blur-xs cursor-pointer shadow-md"
+                  aria-label="닫기"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                {/* Second Popup Image Area - Zero outer whitespace */}
+                <div className="w-full block overflow-hidden relative">
+                  <img
+                    src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1792067983/%EC%A3%BC%EC%9A%94_%EB%B0%A9%EC%86%A1_%EC%96%B8%EB%A1%A0_%EA%B0%95%EC%A1%B0_%EC%83%81%EB%8B%B4%EC%84%BC%ED%84%B0_%ED%8F%AC%EC%8A%A4%ED%84%B0_e6ln84.png"
+                    alt="창원성범죄심리상담센터 주요 방송 언론 소개"
+                    className="w-full h-auto block"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+
+                {/* Bottom Bar: 오늘 하루 보지 않기 & 닫기 */}
+                <div className="px-4 py-2.5 sm:py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                  <button
+                    type="button"
+                    onClick={handleHideTodaySecond}
+                    className="hover:text-slate-900 transition-colors flex items-center gap-1.5 cursor-pointer py-1 font-medium"
+                  >
+                    오늘 하루 보지 않기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCloseSecond}
+                    className="font-bold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-slate-200/60"
+                  >
+                    닫기
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       )}
     </AnimatePresence>
   );
