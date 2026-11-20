@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Scale, 
   Search, 
@@ -44,10 +44,12 @@ import {
   Heart,
   Info,
   PieChart,
-  Clock
+  Clock,
+  ExternalLink,
+  Play
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams } from 'react-router-dom';
 
 // --- Types ---
 interface NavItem {
@@ -71,6 +73,7 @@ const NAV_STRUCTURE: NavItem[] = [
       { title: "대표 인사말", href: "/about/greeting", description: "재범방지 중심의 치료 철학" },
       { title: "상담전문가", href: "/about/experts", description: "검증된 성범죄 특화 전문가" },
       { title: "방송/대외활동", href: "/about/activities", description: "공신력 있는 활동 내역" },
+      { title: "협력 · 협약 · 출강 기관", href: "/about/partners", description: "공공·법률·교육·기업 협력 기관" },
       { title: "공지사항", href: "/about/notice" },
       { title: "오시는 길", href: "/about/location", description: "창원 센터 위치 및 주차 안내" },
     ]
@@ -245,6 +248,7 @@ const Navbar = () => {
                         <Link 
                           key={child.title} 
                           to={child.href}
+                          onClick={() => setActiveMenu(null)}
                           className="group p-3 rounded-xl hover:bg-slate-50 transition-all"
                         >
                           <div className="text-[14px] font-semibold text-slate-900 group-hover:text-[#4F46E5] mb-0.5">{child.title}</div>
@@ -304,6 +308,7 @@ const Navbar = () => {
                       <Link 
                         key={child.title} 
                         to={child.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
                         className="flex flex-col"
                       >
                         <span className="text-lg font-semibold text-slate-900">{child.title}</span>
@@ -913,7 +918,7 @@ const Footer = () => (
           </div>
         </div>
         <p className="text-slate-400 text-xs text-center md:text-right">
-          © 2026 성범죄심리상담치료센터창원. All rights reserved.
+          © 성범죄심리상담치료센터창원. All rights reserved.
         </p>
       </div>
     </div>
@@ -935,14 +940,13 @@ const StatutoryRapeCaseContent = () => (
           미성년자 의제 강간은 동의 여부와 관계없이 성립될 수 있습니다.
         </p>
       </div>
-      <div className="relative rounded-3xl overflow-hidden aspect-video lg:aspect-square shadow-2xl">
+      <div className="relative">
         <img 
-          src="https://images.unsplash.com/photo-1516534775068-ba3e7458af70?auto=format&fit=crop&q=80&w=1000" 
-          alt="고민하는 남성" 
-          className="w-full h-full object-cover blur-[2px] brightness-50"
+          src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786091036/%EB%AF%B8%EC%84%B1%EB%85%84%EC%9E%90_%EC%9D%98%EC%A0%9C_%EA%B0%95%EA%B0%84_%EC%A0%84%EB%AC%B8_%EB%8C%80%EC%9D%91_hlwadm.png" 
+          alt="미성년자 의제 강간 전문 대응" 
+          className="rounded-[40px] shadow-2xl w-full object-cover"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
       </div>
     </section>
 
@@ -1235,7 +1239,7 @@ const WorkplaceCaseContent = () => (
         </div>
         <div className="relative lg:col-span-1 max-w-sm mx-auto lg:mx-0">
           <img 
-            src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/8117b97c4f504f2544908af2745f2723.png" 
+            src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346329/ChatGPT_Image_2026%EB%85%84_3%EC%9B%94_3%EC%9D%BC_%EC%98%A4%ED%9B%84_08_16_41_yut2kc.png" 
             alt="Workplace Case Analysis" 
             className="rounded-[40px] shadow-2xl w-full"
             referrerPolicy="no-referrer"
@@ -1398,7 +1402,7 @@ const StalkingCaseContent = () => (
         </div>
         <div className="relative lg:col-span-1 max-w-sm mx-auto lg:mx-0">
           <img 
-            src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/3c964b98d9be3d76c9a43b274660a27e.png" 
+            src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346345/ChatGPT_Image_2026%EB%85%84_3%EC%9B%94_3%EC%9D%BC_%EC%98%A4%ED%9B%84_07_32_36_pvyiur.png" 
             alt="Stalking Case Analysis" 
             className="rounded-[40px] shadow-2xl w-full"
             referrerPolicy="no-referrer"
@@ -1556,7 +1560,7 @@ const JuvenileCaseContent = () => (
         </div>
         <div className="relative lg:col-span-1 max-w-sm mx-auto lg:mx-0">
           <img 
-            src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/5b23ae94a4d182dd2f6590a7e39c8e28.png" 
+            src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346347/ChatGPT_Image_2026%EB%85%84_3%EC%9B%94_3%EC%9D%BC_%EC%98%A4%ED%9B%84_07_14_08_pgier6.png" 
             alt="Juvenile Case Analysis" 
             className="rounded-[40px] shadow-2xl w-full"
             referrerPolicy="no-referrer"
@@ -1765,7 +1769,7 @@ const TongmaeumCaseContent = () => (
         </div>
         <div className="relative lg:col-span-1 max-w-sm mx-auto lg:mx-0">
           <img 
-            src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/f178f4a48cb6a50a5a1352119518e6e3.png" 
+            src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346348/ChatGPT_Image_2026%EB%85%84_3%EC%9B%94_3%EC%9D%BC_%EC%98%A4%ED%9B%84_06_56_55_cxvu5c.png" 
             alt="Tongmaeum Case Analysis" 
             className="rounded-[40px] shadow-2xl w-full"
             referrerPolicy="no-referrer"
@@ -1890,7 +1894,7 @@ const DeepfakeCaseContent = () => (
         </div>
         <div className="relative">
           <img 
-            src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/67d97b84c9f7063f52c317540fa1688a.png" 
+            src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746426/67d97b84c9f7063f52c317540fa1688a_mvk69s.png" 
             alt="Deepfake Case Analysis" 
             className="rounded-[40px] shadow-2xl w-full"
             referrerPolicy="no-referrer"
@@ -2018,7 +2022,7 @@ const FilmingCaseContent = () => (
         </div>
         <div className="relative">
           <img 
-            src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/a2e502646d4ab5610566f267760a51ca.png" 
+            src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088926/%EB%B6%88%EB%B2%95_%EC%B9%B4%EB%A9%94%EB%9D%BC%EC%B4%AC%EC%98%81_%EC%9C%A0%ED%8F%AC_%EC%A0%84%EB%AC%B8_%EB%8C%80%EC%9D%91_sywzii.png" 
             alt="Filming Case Analysis" 
             className="rounded-[40px] shadow-2xl w-full"
             referrerPolicy="no-referrer"
@@ -2148,7 +2152,7 @@ const MolestationCaseContent = () => (
         </div>
         <div className="relative">
           <img 
-            src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/fff22c558386aeb6f29c77afcb70056b.png" 
+            src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088924/%EA%B0%95%EC%A0%9C_%EC%B6%94%ED%96%89_%EC%A0%84%EB%AC%B8_%EB%8C%80%EC%9D%91_%ED%94%BC%EC%9D%98%EC%9E%90_%EC%9E%85%EC%9E%A5_%ED%8E%98%EC%9D%B4%EC%A7%80_x62jpy.png" 
             alt="Molestation Case Analysis" 
             className="rounded-[40px] shadow-2xl w-full"
             referrerPolicy="no-referrer"
@@ -2257,13 +2261,42 @@ const RapeCaseContent = () => (
   <div className="space-y-24">
     {/* 2. 사건 개요 설명 */}
     <section>
-      <h2 className="text-3xl font-bold text-slate-900 mb-8 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-indigo-100 text-[#4F46E5] flex items-center justify-center">
-          <FileText className="w-6 h-6" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div>
+          <h2 className="text-3xl font-bold text-slate-900 mb-8 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
+              <FileText className="w-6 h-6" />
+            </div>
+            강간 / 준강간 사건의 특징
+          </h2>
+          <p className="text-lg font-bold text-slate-900 leading-relaxed mb-4 break-keep">
+            강간 · 준강간 사건은 동의 여부와 순간의 판단에 대한 심리 구조 분석이 핵심입니다.
+          </p>
+          <p className="text-slate-500 leading-relaxed mb-6 break-keep">
+            사건의 실체적 진실을 가리는 가장 중요한 쟁점은 '동의'의 유무와 그 인식 과정이며, 음주 상황, 관계의 깊이 등 복합적 요소가 작용합니다.
+          </p>
+          <div className="p-6 rounded-2xl bg-rose-50/80 border border-rose-100">
+            <p className="text-rose-600 font-medium leading-relaxed break-keep">
+              사건 발생 당시의 왜곡된 인식을 바로잡지 않으면 진정한 반성과 변화로 이어지기 어렵습니다.
+            </p>
+          </div>
         </div>
-        강간 / 준강간 사건의 특징
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="relative">
+          <img 
+            src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088921/%EA%B0%95%EA%B0%84_%EC%A4%80%EA%B0%95%EA%B0%84_%EC%A0%84%EB%AC%B8_%EB%8C%80%EC%9D%91_vtw8fb.png" 
+            alt="강간 / 준강간 사건 전문 대응" 
+            className="rounded-[40px] shadow-2xl w-full object-cover"
+            referrerPolicy="no-referrer"
+          />
+          <div className="relative lg:absolute -bottom-6 lg:-bottom-8 left-0 lg:-left-8 mt-4 lg:mt-0 p-6 sm:p-8 bg-white rounded-3xl shadow-xl border border-slate-100 max-w-xs">
+            <p className="text-slate-900 font-bold italic leading-relaxed break-keep">
+              "동의 인식의 객관적 재점검과 심리 구조 해체가 재발방지의 핵심입니다."
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
         {[
           { title: "동의 여부의 핵심성", desc: "사건의 실체적 진실을 가리는 가장 중요한 쟁점은 '동의'의 유무와 그 인식 과정입니다." },
           { title: "복합적 상황 맥락", desc: "음주 상황, 관계의 깊이, 당시의 분위기 등 여러 복합적 요소가 사건 해석에 영향을 미칩니다." },
@@ -2271,7 +2304,7 @@ const RapeCaseContent = () => (
         ].map((item, idx) => (
           <div key={idx} className="p-8 rounded-3xl bg-slate-50 border border-slate-100">
             <h4 className="font-bold text-slate-900 mb-3">{item.title}</h4>
-            <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+            <p className="text-sm text-slate-500 leading-relaxed break-keep">{item.desc}</p>
           </div>
         ))}
       </div>
@@ -2423,6 +2456,18 @@ const RapeCaseContent = () => (
   </div>
 );
 
+const CASE_HERO_IMAGES: Record<string, string> = {
+  rape: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088921/%EA%B0%95%EA%B0%84_%EC%A4%80%EA%B0%95%EA%B0%84_%EC%A0%84%EB%AC%B8_%EB%8C%80%EC%9D%91_vtw8fb.png",
+  molestation: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088924/%EA%B0%95%EC%A0%9C_%EC%B6%94%ED%96%89_%EC%A0%84%EB%AC%B8_%EB%8C%80%EC%9D%91_%ED%94%BC%EC%9D%98%EC%9E%90_%EC%9E%85%EC%9E%A5_%ED%8E%98%EC%9D%B4%EC%A7%80_x62jpy.png",
+  filming: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088926/%EB%B6%88%EB%B2%95_%EC%B9%B4%EB%A9%94%EB%9D%BC%EC%B4%AC%EC%98%81_%EC%9C%A0%ED%8F%AC_%EC%A0%84%EB%AC%B8_%EB%8C%80%EC%9D%91_sywzii.png",
+  deepfake: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746426/67d97b84c9f7063f52c317540fa1688a_mvk69s.png",
+  tongmaeum: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346348/ChatGPT_Image_2026%EB%85%84_3%EC%9B%94_3%EC%9D%BC_%EC%98%A4%ED%9B%84_06_56_55_cxvu5c.png",
+  juvenile: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346347/ChatGPT_Image_2026%EB%85%84_3%EC%9B%94_3%EC%9D%BC_%EC%98%A4%ED%9B%84_07_14_08_pgier6.png",
+  "statutory-rape": "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786091036/%EB%AF%B8%EC%84%B1%EB%85%84%EC%9E%90_%EC%9D%98%EC%A0%9C_%EA%B0%95%EA%B0%84_%EC%A0%84%EB%AC%B8_%EB%8C%80%EC%9D%91_hlwadm.png",
+  stalking: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346345/ChatGPT_Image_2026%EB%85%84_3%EC%9B%94_3%EC%9D%BC_%EC%98%A4%ED%9B%84_07_32_36_pvyiur.png",
+  workplace: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346329/ChatGPT_Image_2026%EB%85%84_3%EC%9B%94_3%EC%9D%BC_%EC%98%A4%ED%9B%84_08_16_41_yut2kc.png",
+};
+
 const CasePage = ({ title, slug }: { title: string; slug: string }) => (
   <motion.div 
     initial={{ opacity: 0 }}
@@ -2433,7 +2478,7 @@ const CasePage = ({ title, slug }: { title: string; slug: string }) => (
     <div className="relative bg-slate-900 py-16 lg:py-32 text-white overflow-hidden">
       <div className="absolute inset-0 opacity-20">
         <img 
-          src={`https://picsum.photos/seed/case-${slug}/1920/1080`} 
+          src={CASE_HERO_IMAGES[slug] || `https://picsum.photos/seed/case-${slug}/1920/1080`} 
           alt="Background" 
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
@@ -2594,6 +2639,13 @@ const CasePage = ({ title, slug }: { title: string; slug: string }) => (
   </motion.div>
 );
 
+const TREATMENT_HERO_IMAGES: Record<string, string> = {
+  offender: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746424/8dd7bf0c969b781cadaeeb3f81a21923_u0fgqg.png",
+  digital: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088919/%EB%B6%88%EB%B2%95_%EC%B9%B4%EB%A9%94%EB%9D%BC%EC%B4%AC%EC%98%81_%EC%9C%A0%ED%8F%AC_xntnnr.png",
+  paraphilia: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088926/%EC%84%B1%EB%8F%84%EC%B0%A9_%ED%96%89%EB%8F%99%EA%B5%90%EC%A0%95_%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8_luaytt.png",
+  addiction: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088924/%EC%84%B1%EC%A4%91%EB%8F%85%ED%96%89%EB%8F%99%EC%A4%91%EB%8F%85_%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8_j8ugtz.png",
+};
+
 const TreatmentPage = ({ title, slug }: { title: string; slug: string }) => (
   <motion.div 
     initial={{ opacity: 0 }}
@@ -2604,7 +2656,7 @@ const TreatmentPage = ({ title, slug }: { title: string; slug: string }) => (
     <div className="relative bg-indigo-600 py-16 lg:py-32 text-white overflow-hidden">
       <div className="absolute inset-0 opacity-20">
         <img 
-          src={`https://picsum.photos/seed/treat-${slug}/1920/1080`} 
+          src={TREATMENT_HERO_IMAGES[slug] || `https://picsum.photos/seed/treat-${slug}/1920/1080`} 
           alt="Background" 
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
@@ -2756,7 +2808,7 @@ const TreatmentPage = ({ title, slug }: { title: string; slug: string }) => (
               </div>
               <div className="relative">
                 <img 
-                  src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/44741954c21f7b7bc7e4cb7feee9ef2e.png" 
+                  src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746424/8dd7bf0c969b781cadaeeb3f81a21923_u0fgqg.png" 
                   alt="Counseling Session" 
                   className="rounded-[40px] shadow-2xl w-full"
                   referrerPolicy="no-referrer"
@@ -2841,15 +2893,30 @@ const TreatmentPage = ({ title, slug }: { title: string; slug: string }) => (
                   전문가와 함께 상황을 정리하면 생각보다 빠르게 마음이 정리되는 경우도 많습니다.
                 </p>
               </div>
-              <div className="bg-indigo-600 text-white p-10 rounded-[40px] flex flex-col justify-center text-center space-y-8">
-                <h3 className="text-3xl font-bold">성범죄 가해자 심리상담은 삶을 다시 정리하는 출발점이 될 수 있습니다</h3>
-                <div className="space-y-4 text-lg text-indigo-100">
-                  <p>성범죄 가해자 심리상담을 시작하는 것은 자신을 포기하는 것이 아니라 <br />오히려 자신의 삶을 다시 정리하려는 선택입니다.</p>
-                  <p>사건 이후의 삶은 아직 끝난 것이 아닙니다.</p>
-                  <p className="text-2xl font-black text-white">지금의 선택이 앞으로의 방향을 바꿀 수 있습니다.</p>
+              <div className="bg-indigo-600 text-white p-8 sm:p-10 rounded-[40px] flex flex-col justify-center text-center space-y-6 break-keep">
+                <h3 className="text-2xl lg:text-[26px] font-bold leading-snug tracking-tight">
+                  성범죄 가해자 심리상담은<br />
+                  삶을 다시 정리하는 출발점이 될 수 있습니다
+                </h3>
+
+                <div className="space-y-4 text-base lg:text-[17px] text-indigo-100 leading-relaxed">
+                  <p>
+                    성범죄 가해자 심리상담을 시작하는 것은<br className="hidden sm:inline" /> 자신을 포기하는 것이 아니라<br />
+                    오히려 자신의 삶을 다시 정리하려는 선택입니다.
+                  </p>
                 </div>
-                <p className="text-indigo-200 font-medium">
-                  혼자 고민하기보다 전문가와 함께 상황을 차분히 정리해 보는 것이 도움이 될 수 있습니다.
+
+                <div className="bg-white/10 border border-white/15 rounded-2xl px-6 py-5 space-y-2">
+                  <p className="text-base text-indigo-100 font-medium">
+                    사건 이후의 삶은 아직 끝난 것이 아닙니다.
+                  </p>
+                  <p className="text-xl lg:text-[22px] font-black text-white leading-snug">
+                    지금의 선택이 앞으로의 방향을<br className="hidden sm:inline" /> 바꿀 수 있습니다.
+                  </p>
+                </div>
+
+                <p className="text-sm lg:text-base text-indigo-100/90 font-medium leading-relaxed pt-1">
+                  혼자 고민하기보다 전문가와 함께<br className="hidden sm:inline" /> 상황을 차분히 정리해 보는 것이 도움이 될 수 있습니다.
                 </p>
               </div>
             </div>
@@ -2880,7 +2947,7 @@ const TreatmentPage = ({ title, slug }: { title: string; slug: string }) => (
               </div>
               <div className="relative">
                 <img 
-                  src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/7782b34c496fd1e121ea57e02d77e129.png" 
+                  src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088926/%EC%84%B1%EB%8F%84%EC%B0%A9_%ED%96%89%EB%8F%99%EA%B5%90%EC%A0%95_%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8_luaytt.png" 
                   alt="Behavioral Correction" 
                   className="rounded-[40px] shadow-2xl w-full"
                   referrerPolicy="no-referrer"
@@ -2995,7 +3062,7 @@ const TreatmentPage = ({ title, slug }: { title: string; slug: string }) => (
                 
                 <div className="relative">
                   <img 
-                    src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/67d97b84c9f7063f52c317540fa1688a.png" 
+                    src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088919/%EB%B6%88%EB%B2%95_%EC%B9%B4%EB%A9%94%EB%9D%BC%EC%B4%AC%EC%98%81_%EC%9C%A0%ED%8F%AC_xntnnr.png" 
                     alt="Digital Crime Therapy" 
                     className="rounded-[40px] shadow-2xl w-full"
                     referrerPolicy="no-referrer"
@@ -3305,7 +3372,7 @@ const EducationPage = ({ title, slug }: { title: string; slug: string }) => {
         <div className="bg-slate-900 py-24 lg:py-32 text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-20">
             <img 
-              src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/1bdd29bbfd1a0b96b9be5ded97a44d63.png" 
+              src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786107152/%EC%84%B1%EB%B2%94%EC%A3%84_%EC%9E%AC%EB%B2%94%EB%B0%A9%EC%A7%80_%EA%B5%90%EC%9C%A1_skedbn.png" 
               alt="Professional Background" 
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
@@ -3540,7 +3607,7 @@ const EducationPage = ({ title, slug }: { title: string; slug: string }) => {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="rounded-[40px] overflow-hidden shadow-2xl border-8 border-white">
               <img 
-                src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/008052d96852e02032a222525ec5cf6b.jpg" 
+                src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088919/%EC%84%B1%EB%B2%94%EC%A3%84_%EC%A4%80%EB%B2%95%EC%A0%95%EC%8B%A0_%EA%B0%95%ED%99%94_%EA%B5%90%EC%9C%A1_%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8_wqgy1p.png" 
                 alt="Compliance Spirit Enhancement Education Session" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
@@ -3739,7 +3806,7 @@ const EducationPage = ({ title, slug }: { title: string; slug: string }) => {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="rounded-[40px] overflow-hidden shadow-2xl border-8 border-white">
               <img 
-                src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/bf8abbc8620ad292a5897e0f727ec865.png" 
+                src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786089531/%EC%9E%AC%EB%B2%94%EB%B0%A9%EC%A7%80_%EA%B5%90%EC%9C%A1_%EC%A4%91_%ED%95%98%EB%82%98_nxt8cp.png" 
                 alt="Gender Discrimination Education Session" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
@@ -3917,7 +3984,7 @@ const EducationPage = ({ title, slug }: { title: string; slug: string }) => {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="rounded-[40px] overflow-hidden shadow-2xl border-8 border-white">
               <img 
-                src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/acf6e99259b2104fe43d244ba205a943.png" 
+                src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785747295/%EC%84%B1%EC%9D%B8%EC%A7%80%EC%99%9C%EA%B3%A1_%EA%B5%90%EC%A0%95%EA%B5%90%EC%9C%A1_a2neuh.png" 
                 alt="Gender Perception Distortion Correction Session" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
@@ -4081,7 +4148,7 @@ const EducationPage = ({ title, slug }: { title: string; slug: string }) => {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="rounded-[40px] overflow-hidden shadow-2xl border-8 border-white">
               <img 
-                src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/4e951cd731012c6a33d6968c0ce4b114.png" 
+                src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746679/%EC%84%B1%EC%9D%B8%EC%A7%80%EA%B0%90%EC%88%98%EC%84%B1_ult8hq.png" 
                 alt="Gender Sensitivity Education Session" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
@@ -4458,7 +4525,7 @@ const CollaborationPage = () => (
     <header className="relative bg-slate-900 py-24 lg:py-32 text-white overflow-hidden">
       <div className="absolute inset-0 opacity-40">
         <img 
-          src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/9eb6a8cef42bd42fcf096c96f81fd52a.png" 
+          src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746399/f2ff459c6d7d4b51450ed22f0fd0ff29_mxcc8u.png" 
           alt="Lawyer Collaboration Hero" 
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
@@ -4500,7 +4567,7 @@ const CollaborationPage = () => (
           </div>
           <div className="rounded-3xl overflow-hidden shadow-2xl">
             <img 
-              src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=800" 
+              src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746399/f2ff459c6d7d4b51450ed22f0fd0ff29_mxcc8u.png" 
               alt="Professional Counseling Session" 
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
@@ -4965,7 +5032,7 @@ const LegalAssessmentPage = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-[40px] overflow-hidden shadow-2xl border-8 border-white">
             <img 
-              src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/8da9b2d5602c75b267fd7573a10c5117.png" 
+              src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746402/8da9b2d5602c75b267fd7573a10c5117_tey9j5.png" 
               alt="Professional Psychological Counseling Session" 
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
@@ -5264,149 +5331,2355 @@ const NoticePage = () => {
   );
 };
 
+const ACTIVITY_CATEGORIES = ["전체", "방송 출연", "강연 및 특강", "라디오 및 인터뷰", "교육 및 프로그램"];
+
+const ACTIVITY_MEDIA_DATA = [
+  {
+    id: 207,
+    category: "방송 출연",
+    title: "KBS 동행 441회 후반부에 437회 ‘윤정이의 겨울 붕어빵’ 후기 방송분 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775307821/F677_5_z8bltz.png",
+    summary: "KBS 동행 441회 후기 방송분 출연 1",
+    featured: true
+  },
+  {
+    id: 209,
+    category: "방송 출연",
+    title: "KBS 동행 441회 후반부에 437회 ‘윤정이의 겨울 붕어빵’ 후기 방송분 3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775307789/KakaoTalk_20241207_200825917_01_kczsra.jpg",
+    summary: "KBS 동행 441회 후기 방송분 출연 3",
+    featured: true
+  },
+  {
+    id: 3,
+    category: "라디오 및 인터뷰",
+    title: "TBN 교통방송 라디오 심리상담 코너",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775293165/20191213_093243_upohwz.jpg",
+    summary: "현대인의 충동 조절과 심리 분석",
+    featured: true
+  },
+  {
+    id: 206,
+    category: "방송 출연",
+    title: "KBS1 '사랑의 가족' 방영분 3030회 ’집착하는 아내와 수상한 남편’3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775293098/%EC%82%AC%EB%9E%91%EC%9D%98_%EA%B0%80%EC%A1%B1_%EC%B5%9C%EB%A9%B4_vzfbjx.png",
+    summary: "KBS1 '사랑의 가족' 3030회 출연 3",
+    featured: true
+  },
+  {
+    id: 14,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 05월 24일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292908/%EC%97%B0%EC%95%A0%ED%95%A0_%EB%95%8C_%EC%95%A0%EC%B0%A9_%EC%9C%A0%ED%98%95%EC%9D%B4_%EB%AF%B8%EC%B9%98%EB%8A%94_%EC%98%81%ED%96%A5_ss3jmj.jpg",
+    summary: "『연애할 때 애착 유형이 미치는 영향』 이라는 주제로 방송하였습니다.",
+    featured: true
+  },
+  {
+    id: 303,
+    category: "강연 및 특강",
+    title: "문경소방대원 상담 및 강의",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775294966/1_cmgsnr.jpg",
+    summary: "문경소방대원 상담 및 강의",
+    featured: true
+  },
+  {
+    id: 201,
+    category: "방송 출연",
+    title: "MBC 실화탐사대 284회 마음을 닫아버린 딸 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775306761/F113_GOMCAM_20241024_2238470227_mc9xrf.png",
+    summary: "MBC 실화탐사대 284회 '마음을 닫아버린 딸' 출연 및 자문 1",
+    featured: false
+  },
+  {
+    id: 202,
+    category: "방송 출연",
+    title: "MBC 실화탐사대 284회 마음을 닫아버린 딸 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775306677/F112_GOMCAM_20241024_2240580615_ekst3i.png",
+    summary: "MBC 실화탐사대 284회 '마음을 닫아버린 딸' 출연 및 자문 2",
+    featured: false
+  },
+  {
+    id: 203,
+    category: "방송 출연",
+    title: "MBC 실화탐사대 284회 마음을 닫아버린 딸 3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775306676/F114_GOMCAM_20241024_2245280054_bvc0fo.png",
+    summary: "MBC 실화탐사대 284회 '마음을 닫아버린 딸' 출연 및 자문 3",
+    featured: false
+  },
+  {
+    id: 204,
+    category: "방송 출연",
+    title: "KBS1 '사랑의 가족' 방영분 3030회 ’집착하는 아내와 수상한 남편’1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775307101/KakaoTalk_20240803_113845133_01_ucklcc.png",
+    summary: "KBS1 '사랑의 가족' 3030회 출연 1",
+    featured: false
+  },
+  {
+    id: 205,
+    category: "방송 출연",
+    title: "KBS1 '사랑의 가족' 방영분 3030회 ’집착하는 아내와 수상한 남편’2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775293104/%EC%82%AC%EB%9E%91%EC%9D%98_%EA%B0%80%EC%A1%B1_%EC%9C%A4%EC%9B%90%EC%9E%A5%EB%8B%98_%EC%A0%95%EB%A9%B4_fr1576.png",
+    summary: "KBS1 '사랑의 가족' 3030회 출연 2",
+    featured: false
+  },
+  {
+    id: 208,
+    category: "방송 출연",
+    title: "KBS 동행 441회 후반부에 437회 ‘윤정이의 겨울 붕어빵’ 후기 방송분 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775307827/F674_2_ysucnz.png",
+    summary: "KBS 동행 441회 후기 방송분 출연 2",
+    featured: false
+  },
+  {
+    id: 210,
+    category: "방송 출연",
+    title: "특종세상 351회 20년째 허리 굽은 채 통나무를 나르며 살아온 할머니1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775307402/F136_GOMCAM_20250102_1950400666_xqosa0.png",
+    summary: "특종세상 351회 출연 및 자문 1",
+    featured: false
+  },
+  {
+    id: 211,
+    category: "방송 출연",
+    title: "특종세상 351회 20년째 허리 굽은 채 통나무를 나르며 살아온 할머니2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775307399/F137_GOMCAM_20250102_1951510757_cnfafa.png",
+    summary: "특종세상 351회 출연 및 자문 2",
+    featured: false
+  },
+  {
+    id: 212,
+    category: "방송 출연",
+    title: "특종세상 351회 20년째 허리 굽은 채 통나무를 나르며 살아온 할머니3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775307405/F138_GOMCAM_20250102_1953330454_ayqrv4.png",
+    summary: "특종세상 351회 출연 및 자문 3",
+    featured: false
+  },
+  {
+    id: 213,
+    category: "방송 출연",
+    title: "SBS '그것이 알고 싶다' 방영분 1420회 세 용의자의 진실게임 - 영도 청학동 살인 사건 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775295062/KakaoTalk_20241207_211912951_08_evmvb8.jpg",
+    summary: "SBS '그것이 알고 싶다' 1420회 출연 및 자문 1",
+    featured: false
+  },
+  {
+    id: 214,
+    category: "방송 출연",
+    title: "SBS '그것이 알고 싶다' 방영분 1420회 세 용의자의 진실게임 - 영도 청학동 살인 사건2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775295063/KakaoTalk_20241207_211912951_09_wj9ntc.jpg",
+    summary: "SBS '그것이 알고 싶다' 1420회 출연 및 자문 2",
+    featured: false
+  },
+  {
+    id: 215,
+    category: "방송 출연",
+    title: "SBS '그것이 알고 싶다' 방영분 1420회 세 용의자의 진실게임 - 영도 청학동 살인 사건 3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775295065/KakaoTalk_20241207_211912951_07_kzyycr.jpg",
+    summary: "SBS '그것이 알고 싶다' 1420회 출연 및 자문 3",
+    featured: false
+  },
+  {
+    id: 401,
+    category: "방송 출연",
+    title: "EBS 나눔 0700 644회 상처투성이 엄마에게 온 선물 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775438137/EBS_%EB%82%98%EB%88%94_0700_644%ED%9A%8C_%EC%83%81%EC%B2%98%ED%88%AC%EC%84%B1%EC%9D%B4_%EC%97%84%EB%A7%88%EC%97%90%EA%B2%8C_%EC%98%A8_%EC%84%A0%EB%AC%BC_1_pjjrvv.png",
+    summary: "EBS 나눔 0700 644회 출연 1",
+    featured: false
+  },
+  {
+    id: 402,
+    category: "방송 출연",
+    title: "EBS 나눔 0700 644회 상처투성이 엄마에게 온 선물 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775438136/EBS_%EB%82%98%EB%88%94_0700_644%ED%9A%8C_%EC%83%81%EC%B2%98%ED%88%AC%EC%84%B1%EC%9D%B4_%EC%97%84%EB%A7%88%EC%97%90%EA%B2%8C_%EC%98%A8_%EC%84%A0%EB%AC%BC_2_v5x5ux.png",
+    summary: "EBS 나눔 0700 644회 출연 2",
+    featured: false
+  },
+  {
+    id: 403,
+    category: "방송 출연",
+    title: "EBS 나눔 0700 644회 상처투성이 엄마에게 온 선물 3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775438142/EBS_%EB%82%98%EB%88%94_0700_644%ED%9A%8C_%EC%83%81%EC%B2%98%ED%88%AC%EC%84%B1%EC%9D%B4_%EC%97%84%EB%A7%88%EC%97%90%EA%B2%8C_%EC%98%A8_%EC%84%A0%EB%AC%BC_oerezb.png",
+    summary: "EBS 나눔 0700 644회 출연 3",
+    featured: false
+  },
+  {
+    id: 404,
+    category: "방송 출연",
+    title: "TVN 화성인 X 파일 - 쓰레기집 2부작 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399476/TVN_%ED%99%94%EC%84%B1%EC%9D%B8_X_%ED%8C%8C%EC%9D%BC_-_%EC%93%B0%EB%A0%88%EA%B8%B0%EC%A7%91_2%EB%B6%80%EC%9E%91_1_wzz0z2.jpg",
+    summary: "TVN 화성인 X 파일 출연 1",
+    featured: false
+  },
+  {
+    id: 405,
+    category: "방송 출연",
+    title: "TVN 화성인 X 파일 - 쓰레기집 2부작 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399478/TVN_%ED%99%94%EC%84%B1%EC%9D%B8_X_%ED%8C%8C%EC%9D%BC_-_%EC%93%B0%EB%A0%88%EA%B8%B0%EC%A7%91_2%EB%B6%80%EC%9E%91_2_oxiptx.jpg",
+    summary: "TVN 화성인 X 파일 출연 2",
+    featured: false
+  },
+  {
+    id: 406,
+    category: "방송 출연",
+    title: "TVN 화성인 X 파일 - 쓰레기집 2부작 3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399482/TVN_%ED%99%94%EC%84%B1%EC%9D%B8_X_%ED%8C%8C%EC%9D%BC_-_%EC%93%B0%EB%A0%88%EA%B8%B0%EC%A7%91_2%EB%B6%80%EC%9E%91_3_l6j9ls.jpg",
+    summary: "TVN 화성인 X 파일 출연 3",
+    featured: false
+  },
+  {
+    id: 407,
+    category: "방송 출연",
+    title: "TV조선 가족 두 개의 문 - 화목하지 않은 부부와 그 사이에서 상처받아 온 아들의 이야기",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399498/TV%EC%A1%B0%EC%84%A0_%EA%B0%80%EC%A1%B1_%EB%91%90_%EA%B0%9C%EC%9D%98_%EB%AC%B8_%ED%99%94%EB%AA%A9%ED%95%98%EC%A7%80_%EC%95%8A%EC%9D%80_%EB%B6%80%EB%B6%80%EC%99%80_%EA%B7%B8_%EC%82%AC%EC%9D%B4%EC%97%90%EC%84%9C_%EC%83%81%EC%B2%98%EB%B0%9B%EC%95%84_%EC%98%A8_%EC%95%84%EB%93%A4%EC%9D%98_%EC%9D%B4%EC%95%BC%EA%B8%B0_gv9cgk.jpg",
+    summary: "TV조선 가족 두 개의 문 출연 및 자문",
+    featured: false
+  },
+  {
+    id: 408,
+    category: "방송 출연",
+    title: "부부수업 파뿌리 16회 - 귀농 부부 전쟁의 시작 방송 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399502/%EB%B6%80%EB%B6%80%EC%88%98%EC%97%85_%ED%8C%8C%EB%BF%8C%EB%A6%AC_16%ED%9A%8C_-_%EA%B7%80%EB%86%8D_%EB%B6%80%EB%B6%80_%EC%A0%84%EC%9F%81%EC%9D%98_%EC%8B%9C%EC%9E%91_%EB%B0%A9%EC%86%A1_1_ejsu6t.jpg",
+    summary: "부부수업 파뿌리 16회 출연 1",
+    featured: false
+  },
+  {
+    id: 410,
+    category: "방송 출연",
+    title: "부부수업 파뿌리 16회 - 귀농 부부 전쟁의 시작 방송 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399505/%EB%B6%80%EB%B6%80%EC%88%98%EC%97%85_%ED%8C%8C%EB%BF%8C%EB%A6%AC_16%ED%9A%8C_-_%EA%B7%80%EB%86%8D_%EB%B6%80%EB%B6%80_%EC%A0%84%EC%9F%81%EC%9D%98_%EC%8B%9C%EC%9E%91_%EB%B0%A9%EC%86%A1_2_l0glvd.jpg",
+    summary: "부부수업 파뿌리 16회 출연 2",
+    featured: false
+  },
+  {
+    id: 411,
+    category: "방송 출연",
+    title: "연합뉴스 뉴스Y채널 다문화공동프로젝트 하모니",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399509/%EC%97%B0%ED%95%A9%EB%89%B4%EC%8A%A4_%EB%89%B4%EC%8A%A4Y%EC%B1%84%EB%84%90_%EB%8B%A4%EB%AC%B8%ED%99%94%EA%B3%B5%EB%8F%99%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8_%ED%95%98%EB%AA%A8%EB%8B%88_ygwkfc.jpg",
+    summary: "연합뉴스 뉴스Y채널 하모니 출연",
+    featured: false
+  },
+  {
+    id: 412,
+    category: "방송 출연",
+    title: "JTBC 방송 위험한마음 3회 내아들은 시한 폭탄 부제 - 심리 치유 프로젝트 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399518/JTBC_%EB%B0%A9%EC%86%A1_%EC%9C%84%ED%97%98%ED%95%9C%EB%A7%88%EC%9D%8C_3%ED%9A%8C_%EB%82%B4%EC%95%84%EB%93%A4%EC%9D%80_%EC%8B%9C%ED%95%9C_%ED%8F%AD%ED%83%84_%EB%B6%80%EC%A0%9C_-_%EC%8B%AC%EB%A6%AC_%EC%B9%98%EC%9C%A0_%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8_1_m6n8pt.jpg",
+    summary: "JTBC 위험한마음 3회 출연 1",
+    featured: false
+  },
+  {
+    id: 413,
+    category: "방송 출연",
+    title: "JTBC 방송 위험한마음 3회 내아들은 시한 폭탄 부제 - 심리 치유 프로젝트 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399521/JTBC_%EB%B0%A9%EC%86%A1_%EC%9C%84%ED%97%98%ED%95%9C%EB%A7%88%EC%9D%8C_3%ED%9A%8C_%EB%82%B4%EC%95%84%EB%93%A4%EC%9D%80_%EC%8B%9C%ED%95%9C_%ED%8F%AD%ED%83%84_%EB%B6%80%EC%A0%9C_-_%EC%8B%AC%EB%A6%AC_%EC%B9%98%EC%9C%A0_%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8_2_cdrnc4.jpg",
+    summary: "JTBC 위험한마음 3회 출연 2",
+    featured: false
+  },
+  {
+    id: 414,
+    category: "방송 출연",
+    title: "JTBC 방송 위험한마음 3회 내아들은 시한 폭탄 부제 - 심리 치유 프로젝트 3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399526/JTBC_%EB%B0%A9%EC%86%A1_%EC%9C%84%ED%97%98%ED%95%9C%EB%A7%88%EC%9D%8C_3%ED%9A%8C_%EB%82%B4%EC%95%84%EB%93%A4%EC%9D%80_%EC%8B%9C%ED%95%9C_%ED%8F%AD%ED%83%84_%EB%B6%80%EC%A0%9C_-_%EC%8B%AC%EB%A6%AC_%EC%B9%98%EC%9C%A0_%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8_3_l0crs1.jpg",
+    summary: "JTBC 위험한마음 3회 출연 3",
+    featured: false
+  },
+  {
+    id: 415,
+    category: "방송 출연",
+    title: "KBS 굿모닝 대한민국 - 아내에게 집착하는 남편 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399534/KBS_%EA%B5%BF%EB%AA%A8%EB%8B%9D_%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD_-_%EC%95%84%EB%82%B4%EC%97%90%EA%B2%8C_%EC%A7%91%EC%B0%A9%ED%95%98%EB%8A%94_%EB%82%A8%ED%8E%B8_1_to9zqm.jpg",
+    summary: "KBS 굿모닝 대한민국 출연 1",
+    featured: false
+  },
+  {
+    id: 416,
+    category: "방송 출연",
+    title: "KBS 굿모닝 대한민국 - 아내에게 집착하는 남편 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399538/KBS_%EA%B5%BF%EB%AA%A8%EB%8B%9D_%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD_-_%EC%95%84%EB%82%B4%EC%97%90%EA%B2%8C_%EC%A7%91%EC%B0%A9%ED%95%98%EB%8A%94_%EB%82%A8%ED%8E%B8_2_oag0d7.jpg",
+    summary: "KBS 굿모닝 대한민국 출연 2",
+    featured: false
+  },
+  {
+    id: 417,
+    category: "방송 출연",
+    title: "KBS 굿모닝 대한민국 - 아내에게 집착하는 남편 3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399542/KBS_%EA%B5%BF%EB%AA%A8%EB%8B%9D_%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD_-_%EC%95%84%EB%82%B4%EC%97%90%EA%B2%8C_%EC%A7%91%EC%B0%A9%ED%95%98%EB%8A%94_%EB%82%A8%ED%8E%B8_3_emyofh.jpg",
+    summary: "KBS 굿모닝 대한민국 출연 3",
+    featured: false
+  },
+  {
+    id: 418,
+    category: "방송 출연",
+    title: "KBS2 굿모닝 대한민국 - 패밀리 상담소 - 공주병 아내 좀 말려주세요 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399546/KBS2_%EA%B5%BF%EB%AA%A8%EB%8B%9D_%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD_-_%ED%8C%A8%EB%B0%80%EB%A6%AC_%EC%83%81%EB%8B%B4%EC%86%8C_-%EA%B3%B5%EC%A3%BC%EB%B3%91_%EC%95%84%EB%82%B4_%EC%A2%80_%EB%A7%90%EB%A0%A4%EC%A3%BC%EC%84%B8%EC%9A%94_1_lvjrur.jpg",
+    summary: "KBS2 굿모닝 대한민국 패밀리 상담소 출연 1",
+    featured: false
+  },
+  {
+    id: 419,
+    category: "방송 출연",
+    title: "KBS2 굿모닝 대한민국 - 패밀리 상담소 - 공주병 아내 좀 말려주세요 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399549/KBS2_%EA%B5%BF%EB%AA%A8%EB%8B%9D_%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD_-_%ED%8C%A8%EB%B0%80%EB%A6%AC_%EC%83%81%EB%8B%B4%EC%86%8C_-%EA%B3%B5%EC%A3%BC%EB%B3%91_%EC%95%84%EB%82%B4_%EC%A2%80_%EB%A7%90%EB%A0%A4%EC%A3%BC%EC%84%B8%EC%9A%94_2_mhpgup.jpg",
+    summary: "KBS2 굿모닝 대한민국 패밀리 상담소 출연 2",
+    featured: false
+  },
+  {
+    id: 420,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 新 가족기획 - 아내 노트의 비밀 출연 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399553/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EC%95%84%EB%82%B4_%EB%85%B8%ED%8A%B8%EC%9D%98_%EB%B9%84%EB%B0%80_%EC%B6%9C%EC%97%B0_1_dume9m.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 1",
+    featured: false
+  },
+  {
+    id: 421,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 新 가족기획 - 아내 노트의 비밀 출연 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399557/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EC%95%84%EB%82%B4_%EB%85%B8%ED%8A%B8%EC%9D%98_%EB%B9%84%EB%B0%80_%EC%B6%9C%EC%97%B0_2_xyebjx.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 2",
+    featured: false
+  },
+  {
+    id: 422,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 新 가족기획 - 외간남자 부를까 봐 집 지키는 남편 출연 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399561/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EC%99%B8%EA%B0%84%EB%82%A8%EC%9E%90_%EB%B6%80%EB%A5%BC%EA%B9%8C_%EB%B4%90_%EC%A7%91_%EC%A7%80%ED%82%A4%EB%8A%94_%EB%82%A8%ED%8E%B8_%EC%B6%9C%EC%97%B0_1_kwexhw.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 3",
+    featured: false
+  },
+  {
+    id: 423,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 新 가족기획 - 외간남자 부를까 봐 집 지키는 남편 출연 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399565/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EC%99%B8%EA%B0%84%EB%82%A8%EC%9E%90_%EB%B6%80%EB%A5%BC%EA%B9%8C_%EB%B4%90_%EC%A7%91_%EC%A7%80%ED%82%A4%EB%8A%94_%EB%82%A8%ED%8E%B8_%EC%B6%9C%EC%97%B0_2_nzfnxq.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 4",
+    featured: false
+  },
+  {
+    id: 424,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 新 가족기획 - 친정엄마 짝사랑 하는 딸 그녀가 친정에 못가는 이유 출연 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399568/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EC%B9%9C%EC%A0%95%EC%97%84%EB%A7%88_%EC%A7%9D%EC%82%AC%EB%9E%91_%ED%95%98%EB%8A%94_%EB%94%B8_%EA%B7%B8%EB%85%80%EA%B0%80_%EC%B9%9C%EC%A0%95%EC%97%90_%EB%AA%BB%EA%B0%80%EB%8A%94_%EC%9D%B4%EC%9C%A0_%EC%B6%9C%EC%97%B0_1_ihihbj.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 5",
+    featured: false
+  },
+  {
+    id: 425,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 新 가족기획 - 친정엄마 짝사랑 하는 딸 그녀가 친정에 못가는 이유 출연",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399572/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EC%B9%9C%EC%A0%95%EC%97%84%EB%A7%88_%EC%A7%9D%EC%82%AC%EB%9E%91_%ED%95%98%EB%8A%94_%EB%94%B8_%EA%B7%B8%EB%85%80%EA%B0%80_%EC%B9%9C%EC%A0%95%EC%97%90_%EB%AA%BB%EA%B0%80%EB%8A%94_%EC%9D%B4%EC%9C%A0_%EC%B6%9C%EC%97%B0_ok89bv.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 6",
+    featured: false
+  },
+  {
+    id: 426,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 新 가족기획 나이 많은 게 죄인가요 스킨십 안 해주는 남편 출연 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399576/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_%EB%82%98%EC%9D%B4_%EB%A7%8E%EC%9D%80_%EA%B2%8C_%EC%A3%84%EC%9D%B8%EA%B0%80%EC%9A%94_%EC%8A%A4%ED%82%A8%EC%8B%AD_%EC%95%88_%ED%95%B4%EC%A3%BC%EB%8A%94_%EB%82%A8%ED%8E%B8_%EC%B6%9C%EC%97%B0_1_bh6d3q.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 7",
+    featured: false
+  },
+  {
+    id: 427,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 新 가족기획 나이 많은 게 죄인가요 스킨십 안 해주는 남편 출연 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399580/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_%EB%82%98%EC%9D%B4_%EB%A7%8E%EC%9D%80_%EA%B2%8C_%EC%A3%84%EC%9D%B8%EA%B0%80%EC%9A%94_%EC%8A%A4%ED%82%A8%EC%8B%AD_%EC%95%88_%ED%95%B4%EC%A3%BC%EB%8A%94_%EB%82%A8%ED%8E%B8_%EC%B6%9C%EC%97%B0_2_u3sg2x.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 8",
+    featured: false
+  },
+  {
+    id: 428,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 新 가족기획 나이 많은 게 죄인가요 스킨십 안 해주는 남편 출연 3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399583/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_%EB%82%98%EC%9D%B4_%EB%A7%8E%EC%9D%80_%EA%B2%8C_%EC%A3%84%EC%9D%B8%EA%B0%80%EC%9A%94_%EC%8A%A4%ED%82%A8%EC%8B%AD_%EC%95%88_%ED%95%B4%EC%A3%BC%EB%8A%94_%EB%82%A8%ED%8E%B8_%EC%B6%9C%EC%97%B0_3_nog0hx.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 9",
+    featured: false
+  },
+  {
+    id: 429,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 출연 新 가족기획 자식만 줄줄이 낳아 놓고. 나몰라라 철없는 남편 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399588/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%EC%B6%9C%EC%97%B0_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_%EC%9E%90%EC%8B%9D%EB%A7%8C_%EC%A4%84%EC%A4%84%EC%9D%B4_%EB%82%B3%EC%95%84_%EB%86%93%EA%B3%A0._%EB%82%98%EB%AA%B0%EB%9D%BC%EB%9D%BC_%EC%B2%A0%EC%97%86%EB%8A%94_%EB%82%A8%ED%8E%B8_1_nvt6mg.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 10",
+    featured: false
+  },
+  {
+    id: 430,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 출연 新 가족기획 자식만 줄줄이 낳아 놓고. 나몰라라 철없는 남편 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399592/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%EC%B6%9C%EC%97%B0_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_%EC%9E%90%EC%8B%9D%EB%A7%8C_%EC%A4%84%EC%A4%84%EC%9D%B4_%EB%82%B3%EC%95%84_%EB%86%93%EA%B3%A0._%EB%82%98%EB%AA%B0%EB%9D%BC%EB%9D%BC_%EC%B2%A0%EC%97%86%EB%8A%94_%EB%82%A8%ED%8E%B8_2_quqd8o.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 11",
+    featured: false
+  },
+  {
+    id: 431,
+    category: "방송 출연",
+    title: "MBC 생방송 오늘의 아침 출연 新 가족기획 자식만 줄줄이 낳아 놓고. 나몰라라 철없는 남편 3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399595/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1_%EC%98%A4%EB%8A%98%EC%9D%98_%EC%95%84%EC%B9%A8_%EC%B6%9C%EC%97%B0_%E6%96%B0_%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_%EC%9E%90%EC%8B%9D%EB%A7%8C_%EC%A4%84%EC%A4%84%EC%9D%B4_%EB%82%B3%EC%95%84_%EB%86%93%EA%B3%A0._%EB%82%98%EB%AA%B0%EB%9D%BC%EB%9D%BC_%EC%B2%A0%EC%97%86%EB%8A%94_%EB%82%A8%ED%8E%B8_3_bc1igk.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 12",
+    featured: false
+  },
+  {
+    id: 432,
+    category: "방송 출연",
+    title: "MBC 생방송오늘아침 新가족기획 - 심리상황극 방송 촬영 0331 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399611/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1%EC%98%A4%EB%8A%98%EC%95%84%EC%B9%A8_%E6%96%B0%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EC%8B%AC%EB%A6%AC%EC%83%81%ED%99%A9%EA%B7%B9_%EB%B0%A9%EC%86%A1_%EC%B4%AC%EC%98%81_0331_1_hrvcvn.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 13",
+    featured: false
+  },
+  {
+    id: 433,
+    category: "방송 출연",
+    title: "MBC 생방송오늘아침 新가족기획 - 심리상황극 방송 촬영 0331 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399599/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1%EC%98%A4%EB%8A%98%EC%95%84%EC%B9%A8_%E6%96%B0%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EC%8B%AC%EB%A6%AC%EC%83%81%ED%99%A9%EA%B7%B9_%EB%B0%A9%EC%86%A1_%EC%B4%AC%EC%98%81_0331_2_fwsc8n.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 14",
+    featured: false
+  },
+  {
+    id: 434,
+    category: "방송 출연",
+    title: "MBC 생방송오늘아침 新가족기획 - 내 남편의 이중생활 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399604/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1%EC%98%A4%EB%8A%98%EC%95%84%EC%B9%A8_%E6%96%B0%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EB%82%B4_%EB%82%A8%ED%8E%B8%EC%9D%98_%EC%9D%B4%EC%A4%91%EC%83%9D%ED%99%9C_1_azca0p.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 15",
+    featured: false
+  },
+  {
+    id: 435,
+    category: "방송 출연",
+    title: "MBC 생방송오늘아침 新가족기획 - 내 남편의 이중생활 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399607/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1%EC%98%A4%EB%8A%98%EC%95%84%EC%B9%A8_%E6%96%B0%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EB%82%B4_%EB%82%A8%ED%8E%B8%EC%9D%98_%EC%9D%B4%EC%A4%91%EC%83%9D%ED%99%9C_2_szpzgw.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 16",
+    featured: false
+  },
+  {
+    id: 436,
+    category: "방송 출연",
+    title: "MBC 생방송오늘아침 新가족기획 20150126 맨몸으로 나가라는 남편 30년전 일 때문에",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399615/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1%EC%98%A4%EB%8A%98%EC%95%84%EC%B9%A8_%E6%96%B0%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_20150126_%EB%A7%A8%EB%AA%B8%EC%9C%BC%EB%A1%9C_%EB%82%98%EA%B0%80%EB%9D%BC%EB%8A%94_%EB%82%A8%ED%8E%B8_30%EB%85%84%EC%A0%84_%EC%9D%BC_%EB%95%8C%EB%AC%B8%EC%97%90_xmn0so.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 17",
+    featured: false
+  },
+  {
+    id: 437,
+    category: "방송 출연",
+    title: "MBC 생방송오늘아침 新가족기획 방송 - 무시당해도 참는 아내 촬영 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399619/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1%EC%98%A4%EB%8A%98%EC%95%84%EC%B9%A8_%E6%96%B0%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_%EB%B0%A9%EC%86%A1_-_%EB%AC%B4%EC%8B%9C%EB%8B%B9%ED%95%B4%EB%8F%84_%EC%B0%B8%EB%8A%94_%EC%95%84%EB%82%B4_%EC%B4%AC%EC%98%81_0311_1_skamfc.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 18",
+    featured: false
+  },
+  {
+    id: 438,
+    category: "방송 출연",
+    title: "MBC 생방송오늘아침 新가족기획 방송 - 무시당해도 참는 아내 촬영 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399623/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1%EC%98%A4%EB%8A%98%EC%95%84%EC%B9%A8_%E6%96%B0%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_%EB%B0%A9%EC%86%A1_-_%EB%AC%B4%EC%8B%9C%EB%8B%B9%ED%95%B4%EB%8F%84_%EC%B0%B8%EB%8A%94_%EC%95%84%EB%82%B4_%EC%B4%AC%EC%98%81_0311_2_ug5zr0.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 19",
+    featured: false
+  },
+  {
+    id: 439,
+    category: "방송 출연",
+    title: "MBC 생방송오늘의아침 新가족기획 - 젊어서는 바람피고 늙어서는 잔소리하는 남편 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399626/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1%EC%98%A4%EB%8A%98%EC%9D%98%EC%95%84%EC%B9%A8_%E6%96%B0%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EC%A0%8A%EC%96%B4%EC%84%9C%EB%8A%94_%EB%B0%94%EB%9E%8C%ED%94%BC%EA%B3%A0_%EB%8A%99%EC%96%B4%EC%84%9C%EB%8A%94_%EC%9E%94%EC%86%8C%EB%A6%AC%ED%95%98%EB%8A%94_%EB%82%A8%ED%8E%B8_1_whe9kn.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 20",
+    featured: false
+  },
+  {
+    id: 440,
+    category: "방송 출연",
+    title: "MBC 생방송오늘의아침 新가족기획 - 젊어서는 바람피고 늙어서는 잔소리하는 남편 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399630/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1%EC%98%A4%EB%8A%98%EC%9D%98%EC%95%84%EC%B9%A8_%E6%96%B0%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EC%A0%8A%EC%96%B4%EC%84%9C%EB%8A%94_%EB%B0%94%EB%9E%8C%ED%94%BC%EA%B3%A0_%EB%8A%99%EC%96%B4%EC%84%9C%EB%8A%94_%EC%9E%94%EC%86%8C%EB%A6%AC%ED%95%98%EB%8A%94_%EB%82%A8%ED%8E%B8_2_mmycxc.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 21",
+    featured: false
+  },
+  {
+    id: 441,
+    category: "방송 출연",
+    title: "MBC 생방송오늘의아침 新가족기획 - 젊어서는 바람피고 늙어서는 잔소리하는 남편",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399634/MBC_%EC%83%9D%EB%B0%A9%EC%86%A1%EC%98%A4%EB%8A%98%EC%9D%98%EC%95%84%EC%B9%A8_%E6%96%B0%EA%B0%80%EC%A1%B1%EA%B8%B0%ED%9A%8D_-_%EC%A0%8A%EC%96%B4%EC%84%9C%EB%8A%94_%EB%B0%94%EB%9E%8C%ED%94%BC%EA%B3%A0_%EB%8A%99%EC%96%B4%EC%84%9C%EB%8A%94_%EC%9E%94%EC%86%8C%EB%A6%AC%ED%95%98%EB%8A%94_%EB%82%A8%ED%8E%B8_mnjl18.jpg",
+    summary: "MBC 생방송 오늘의 아침 출연 22",
+    featured: false
+  },
+  {
+    id: 442,
+    category: "방송 출연",
+    title: "MBN 파뿌리 5회 - 어린 부부의 과속 스캔들",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399645/MBN_%ED%8C%8C%EB%BF%8C%EB%A6%AC_5%ED%9A%8C_-_%EC%96%B4%EB%A6%B0_%EB%B6%80%EB%B6%80%EC%9D%98_%EA%B3%BC%EC%86%8D_%EC%8A%A4%EC%BA%94%EB%93%A4_yhb2d4.jpg",
+    summary: "MBN 파뿌리 5회 출연",
+    featured: false
+  },
+  {
+    id: 443,
+    category: "방송 출연",
+    title: "MBN 파뿌리 12회 - 채팅부부의 비밀",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399648/MBN_%ED%8C%8C%EB%BF%8C%EB%A6%AC_12%ED%9A%8C_-_%EC%B1%84%ED%8C%85%EB%B6%80%EB%B6%80%EC%9D%98_%EB%B9%84%EB%B0%80_zi5lvn.jpg",
+    summary: "MBN 파뿌리 12회 출연",
+    featured: false
+  },
+  {
+    id: 444,
+    category: "방송 출연",
+    title: "TV 조선 가족 두개의 문 아내의 집착 남편의 거짓말 편 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399652/TV_%EC%A1%B0%EC%84%A0_%EA%B0%80%EC%A1%B1_%EB%91%90%EA%B0%9C%EC%9D%98_%EB%AC%B8_%EC%95%84%EB%82%B4%EC%9D%98_%EC%A7%91%EC%B0%A9_%EB%82%A8%ED%8E%B8%EC%9D%98_%EA%B1%B0%EC%A7%93%EB%A7%90_%ED%8E%B8_%EC%9C%A4%EC%98%81%EC%A4%80_%EC%9B%90%EC%9E%A5%EB%8B%98_%EC%B6%9C%EC%97%B0_1_kg20sz.jpg",
+    summary: "TV조선 가족 두 개의 문 출연 1",
+    featured: false
+  },
+  {
+    id: 445,
+    category: "방송 출연",
+    title: "TV 조선 가족 두개의 문 아내의 집착 남편의 거짓말 편 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399657/TV_%EC%A1%B0%EC%84%A0_%EA%B0%80%EC%A1%B1_%EB%91%90%EA%B0%9C%EC%9D%98_%EB%AC%B8_%EC%95%84%EB%82%B4%EC%9D%98_%EC%A7%91%EC%B0%A9_%EB%82%A8%ED%8E%B8%EC%9D%98_%EA%B1%B0%EC%A7%93%EB%A7%90_%ED%8E%B8_%EC%9C%A4%EC%98%81%EC%A4%80_%EC%9B%90%EC%9E%A5%EB%8B%98_%EC%B6%9C%EC%97%B0_2_olc6or.jpg",
+    summary: "TV조선 가족 두 개의 문 출연 2",
+    featured: false
+  },
+  {
+    id: 446,
+    category: "방송 출연",
+    title: "KBS 7시 뉴스 인터뷰 - 주택가 파고든 홀덤펍 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775400752/%EB%89%B4%EC%8A%A4_%EC%9D%B8%ED%84%B0%EB%B7%B0_-_%EC%A3%BC%ED%83%9D%EA%B0%80_%ED%8C%8C%EA%B3%A0%EB%93%A0_%ED%99%80%EB%8D%A4%ED%8E%8D_1_tzxldz.jpg",
+    summary: "KBS 7시 뉴스 인터뷰 1",
+    featured: false
+  },
+  {
+    id: 447,
+    category: "방송 출연",
+    title: "KBS 7시 뉴스 인터뷰 - 주택가 파고든 홀덤펍 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775400749/%EB%89%B4%EC%8A%A4_%EC%9D%B8%ED%84%B0%EB%B7%B0_-_%EC%A3%BC%ED%83%9D%EA%B0%80_%ED%8C%8C%EA%B3%A0%EB%93%A0_%ED%99%80%EB%8D%A4%ED%8E%8D_2_gp4n2a.jpg",
+    summary: "KBS 7시 뉴스 인터뷰 2",
+    featured: false
+  },
+  {
+    id: 448,
+    category: "방송 출연",
+    title: "MBN 천기누설 6화 - 멈출 수 없는 식탐 폭식증 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775443249/MBN_%EC%B2%9C%EA%B8%B0%EB%88%84%EC%84%A4_6%ED%99%94_-_%EB%A9%88%EC%B6%9C_%EC%88%98_%EC%97%86%EB%8A%94_%EC%8B%9D%ED%83%90_%ED%8F%AD%EC%8B%9D%EC%A6%9D_1_chnjuc.png",
+    summary: "MBN 천기누설 6화 출연 1",
+    featured: false
+  },
+  {
+    id: 449,
+    category: "방송 출연",
+    title: "MBN 천기누설 6화 - 멈출 수 없는 식탐 폭식증 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775443248/MBN_%EC%B2%9C%EA%B8%B0%EB%88%84%EC%84%A4_6%ED%99%94_-_%EB%A9%88%EC%B6%9C_%EC%88%98_%EC%97%86%EB%8A%94_%EC%8B%9D%ED%83%90_%ED%8F%AD%EC%8B%9D%EC%A6%9D_2_zxtoup.png",
+    summary: "MBN 천기누설 6화 출연 2",
+    featured: false
+  },
+  {
+    id: 450,
+    category: "방송 출연",
+    title: "MBC 언니가 돌아왔다 재취업 프로젝트 방송 촬영",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399637/MBC_%EC%96%B8%EB%8B%88%EA%B0%80_%EB%8F%8C%EC%95%84%EC%99%94%EB%8B%A4_%EC%9E%AC%EC%B7%A8%EC%97%85_%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8_%EB%B0%A9%EC%86%A1_%EC%B4%AC%EC%98%81_zkwalz.jpg",
+    summary: "MBC 언니가 돌아왔다 출연",
+    featured: false
+  },
+  {
+    id: 451,
+    category: "방송 출연",
+    title: "tvN 엑소시스트 99회 색귀와 싸우는 여자",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399661/tvN_%EC%97%91%EC%86%8C%EC%8B%9C%EC%8A%A4%ED%8A%B8_99%ED%9A%8C_%EC%83%89%EA%B7%80%EC%99%80_%EC%8B%B8%EC%9A%B0%EB%8A%94_%EC%97%AC%EC%9E%90_cqh06a.jpg",
+    summary: "tvN 엑소시스트 99회 출연",
+    featured: false
+  },
+  {
+    id: 452,
+    category: "방송 출연",
+    title: "tvN 엑소시스트 125화 고개가 뒤로 넘어가는 남자 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775400768/tvN_%EC%97%91%EC%86%8C%EC%8B%9C%EC%8A%A4%ED%8A%B8_125%ED%99%94_%EA%B3%A0%EA%B0%9C%EA%B0%80_%EB%92%A4%EB%A1%9C_%EB%84%98%EC%96%B4%EA%B0%80%EB%8A%94_%EB%82%A8%EC%9E%90_1_np74t5.png",
+    summary: "tvN 엑소시스트 125화 출연 1",
+    featured: false
+  },
+  {
+    id: 453,
+    category: "방송 출연",
+    title: "tvN 엑소시스트 125화 고개가 뒤로 넘어가는 남자 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775400772/tvN_%EC%97%91%EC%86%8C%EC%8B%9C%EC%8A%A4%ED%8A%B8_125%ED%99%94_%EA%B3%A0%EA%B0%9C%EA%B0%80_%EB%92%A4%EB%A1%9C_%EB%84%98%EC%96%B4%EA%B0%80%EB%8A%94_%EB%82%A8%EC%9E%90_2_oxvile.png",
+    summary: "tvN 엑소시스트 125화 출연 2",
+    featured: false
+  },
+  {
+    id: 454,
+    category: "방송 출연",
+    title: "tvN 엑소시스트 103화 매일 자살을 시도하는 여자 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775400794/tvN_%EC%97%91%EC%86%8C%EC%8B%9C%EC%8A%A4%ED%8A%B8103%ED%99%94%EB%A7%A4%EC%9D%BC%EC%9E%90%EC%82%B4%EC%9D%84%EC%8B%9C%EB%8F%84%ED%95%98%EB%8A%94%EC%97%AC%EC%9E%90_1_loohb6.png",
+    summary: "tvN 엑소시스트 103화 출연 1",
+    featured: false
+  },
+  {
+    id: 455,
+    category: "방송 출연",
+    title: "tvN 엑소시스트 103화 매일 자살을 시도하는 여자 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775400798/tvN_%EC%97%91%EC%86%8C%EC%8B%9C%EC%8A%A4%ED%8A%B8103%ED%99%94%EB%A7%A4%EC%9D%BC%EC%9E%90%EC%82%B4%EC%9D%84%EC%8B%9C%EB%8F%84%ED%95%98%EB%8A%94%EC%97%AC%EC%9E%90_2_eluxsm.png",
+    summary: "tvN 엑소시스트 103화 출연 2",
+    featured: false
+  },
+  {
+    id: 456,
+    category: "방송 출연",
+    title: "tvN 엑소시스트 103화 매일 자살을 시도하는 여자 3",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775400790/tvN_%EC%97%91%EC%86%8C%EC%8B%9C%EC%8A%A4%ED%8A%B8103%ED%99%94%EB%A7%A4%EC%9D%BC%EC%9E%90%EC%82%B4%EC%9D%84%EC%8B%9C%EB%8F%84%ED%95%98%EB%8A%94%EC%97%AC%EC%9E%90_3_icxtd9.jpg",
+    summary: "tvN 엑소시스트 103화 출연 3",
+    featured: false
+  },
+  {
+    id: 457,
+    category: "방송 출연",
+    title: "주간 인물 Weekly People 선정 - 윤영준 원장님",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775399514/%EC%9D%B8%EB%AC%BC_%EC%8B%9C%EC%82%AC_%EC%A3%BC%EA%B0%84%EC%A7%80_Weekly_People_%EC%A3%BC%EA%B0%84_%EC%9D%B8%EB%AC%BC_%EC%84%A0%EC%A0%95_%EC%9C%A4%EC%98%81%EC%A4%80_%EC%9B%90%EC%9E%A5%EB%8B%98_ypsquf.jpg",
+    summary: "인물 시사 주간지 Weekly People 주간 인물 선정",
+    featured: false
+  },
+  {
+    id: 101,
+    category: "강연 및 특강",
+    title: "울산 도산도서관 명상 강의",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775294462/%EB%8F%84%EC%82%B0%EB%8F%84%EC%84%9C%EA%B4%80_aslywn.jpg",
+    summary: "울산 도산도서관에서 진행한 명상 강의",
+    featured: false
+  },
+  {
+    id: 102,
+    category: "강연 및 특강",
+    title: "고용지원센터-자문자답테라피&집단상담 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775304810/%EA%B3%A0%EC%9A%A9%EC%A7%80%EC%9B%90%EC%84%BC%ED%84%B0-%EC%9E%90%EB%AC%B8%EC%9E%90%EB%8B%B5%ED%85%8C%EB%9D%BC%ED%94%BC_%EC%A7%91%EB%8B%A8%EC%83%81%EB%8B%B4_1_rswxtk.jpg",
+    summary: "고용지원센터 자문자답테라피 및 집단상담 1차",
+    featured: false
+  },
+  {
+    id: 103,
+    category: "강연 및 특강",
+    title: "고용지원센터-자문자답테라피&집단상담 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298852/%EA%B3%A0%EC%9A%A9%EC%A7%80%EC%9B%90%EC%84%BC%ED%84%B0-%EC%9E%90%EB%AC%B8%EC%9E%90%EB%8B%B5%ED%85%8C%EB%9D%BC%ED%94%BC_%EC%A7%91%EB%8B%A8%EC%83%81%EB%8B%B4_2_xfxh1o.jpg",
+    summary: "고용지원센터 자문자답테라피 및 집단상담 2차",
+    featured: false
+  },
+  {
+    id: 104,
+    category: "강연 및 특강",
+    title: "경북권 경찰기동대 상담 및 강의 영천, 구미, 김천",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298845/%EA%B2%BD%EB%B6%81%EA%B6%8C_%EA%B2%BD%EC%B0%B0%EA%B8%B0%EB%8F%99%EB%8C%80_%EC%83%81%EB%8B%B4_%EB%B0%8F_%EA%B0%95%EC%9D%98_%EC%98%81%EC%B2%9C_%EA%B5%AC%EB%AF%B8_%EA%B9%80%EC%B2%9C_re6thi.jpg",
+    summary: "경북권 경찰기동대 상담 및 강의 (영천, 구미, 김천)",
+    featured: false
+  },
+  {
+    id: 105,
+    category: "강연 및 특강",
+    title: "경북권 경찰기동대 상담 및 강의 영천, 구미, 김천 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775301930/%EA%B2%BD%EB%B6%81%EA%B6%8C_%EA%B2%BD%EC%B0%B0%EA%B8%B0%EB%8F%99%EB%8C%80_%EC%83%81%EB%8B%B4_%EB%B0%8F_%EA%B0%95%EC%9D%98_%EC%98%81%EC%B2%9C_%EA%B5%AC%EB%AF%B8_%EA%B9%80%EC%B2%9C_2_g39hpf.jpg",
+    summary: "경북권 경찰기동대 상담 및 강의 (영천, 구미, 김천) 2차",
+    featured: false
+  },
+  {
+    id: 106,
+    category: "강연 및 특강",
+    title: "경북고용성장지원센터 내면아이 및 미해결과제 실습 및 강의1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298856/%EA%B2%BD%EB%B6%81%EA%B3%A0%EC%9A%A9%EC%84%B1%EC%9E%A5%EC%A7%80%EC%9B%90%EC%84%BC%ED%84%B0_%EB%82%B4%EB%A9%B4%EC%95%84%EC%9D%B4_%EB%B0%8F_%EB%AF%B8%ED%95%B4%EA%B2%B0%EA%B3%BC%EC%A0%9C_%EC%8B%A4%EC%8A%B5_%EB%B0%8F_%EA%B0%95%EC%9D%981_djkplp.jpg",
+    summary: "경북고용성장지원센터 내면아이 및 미해결과제 실습 및 강의 1차",
+    featured: false
+  },
+  {
+    id: 107,
+    category: "강연 및 특강",
+    title: "경북고용성장지원센터 내면아이 및 미해결과제 실습 및 강의2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298854/%EA%B2%BD%EB%B6%81%EA%B3%A0%EC%9A%A9%EC%84%B1%EC%9E%A5%EC%A7%80%EC%9B%90%EC%84%BC%ED%84%B0_%EB%82%B4%EB%A9%B4%EC%95%84%EC%9D%B4_%EB%B0%8F_%EB%AF%B8%ED%95%B4%EA%B2%B0%EA%B3%BC%EC%A0%9C_%EC%8B%A4%EC%8A%B5_%EB%B0%8F_%EA%B0%95%EC%9D%982_ze6kjn.jpg",
+    summary: "경북고용성장지원센터 내면아이 및 미해결과제 실습 및 강의 2차",
+    featured: false
+  },
+  {
+    id: 108,
+    category: "강연 및 특강",
+    title: "경북선거관리위원회 강의 실시1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298887/%EA%B2%BD%EB%B6%81%EC%84%A0%EA%B1%B0%EA%B4%80%EB%A6%AC%EC%9C%84%EC%9B%90%ED%9A%8C_%EA%B0%95%EC%9D%98_%EC%8B%A4%EC%8B%9C1_vskzrc.jpg",
+    summary: "경북선거관리위원회 강의 실시 1차",
+    featured: false
+  },
+  {
+    id: 109,
+    category: "강연 및 특강",
+    title: "경북선거관리위원회 강의 실시2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298885/%EA%B2%BD%EB%B6%81%EC%84%A0%EA%B1%B0%EA%B4%80%EB%A6%AC%EC%9C%84%EC%9B%90%ED%9A%8C_%EA%B0%95%EC%9D%98_%EC%8B%A4%EC%8B%9C2_qft41o.jpg",
+    summary: "경북선거관리위원회 강의 실시 2차",
+    featured: false
+  },
+  {
+    id: 110,
+    category: "강연 및 특강",
+    title: "경북지방경찰청 기동1중대 전, 의경 심리교육",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298897/%EA%B2%BD%EB%B6%81%EC%A7%80%EB%B0%A9%EA%B2%BD%EC%B0%B0%EC%B2%AD_%EA%B8%B0%EB%8F%991%EC%A4%91%EB%8C%80_%EC%A0%84_%EC%9D%98%EA%B2%BD_%EC%8B%AC%EB%A6%AC%EA%B5%90%EC%9C%A1_wjm5ig.jpg",
+    summary: "경북지방경찰청 기동1중대 전, 의경 심리교육",
+    featured: false
+  },
+  {
+    id: 111,
+    category: "강연 및 특강",
+    title: "경북칠곡경찰서 전, 의경 집단 및 개인상담 진행 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298891/%EA%B2%BD%EB%B6%81%EC%B9%A0%EA%B3%A1%EA%B2%BD%EC%B0%B0%EC%84%9C_%EC%A0%84_%EC%9D%98%EA%B2%BD_%EC%A7%91%EB%8B%A8_%EB%B0%8F_%EA%B0%9C%EC%9D%B8%EC%83%81%EB%8B%B4_%EC%A7%84%ED%96%89_1_xgtat9.jpg",
+    summary: "경북칠곡경찰서 전, 의경 집단 및 개인상담 진행 1차",
+    featured: false
+  },
+  {
+    id: 112,
+    category: "강연 및 특강",
+    title: "경북칠곡경찰서 전, 의경 집단 및 개인상담 진행 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298889/%EA%B2%BD%EB%B6%81%EC%B9%A0%EA%B3%A1%EA%B2%BD%EC%B0%B0%EC%84%9C_%EC%A0%84_%EC%9D%98%EA%B2%BD_%EC%A7%91%EB%8B%A8_%EB%B0%8F_%EA%B0%9C%EC%9D%B8%EC%83%81%EB%8B%B4_%EC%A7%84%ED%96%89_2_hhhmnm.jpg",
+    summary: "경북칠곡경찰서 전, 의경 집단 및 개인상담 진행 2차",
+    featured: false
+  },
+  {
+    id: 113,
+    category: "강연 및 특강",
+    title: "경상북도 소방공무원 찾아가는 상담실",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298861/%EA%B2%BD%EC%83%81%EB%B6%81%EB%8F%84_%EC%86%8C%EB%B0%A9%EA%B3%B5%EB%AC%B4%EC%9B%90_%EC%B0%BE%EC%95%84%EA%B0%80%EB%8A%94_%EC%83%81%EB%8B%B4%EC%8B%A4_wqbqtt.jpg",
+    summary: "경상북도 소방공무원 대상 찾아가는 상담실 운영",
+    featured: false
+  },
+  {
+    id: 114,
+    category: "강연 및 특강",
+    title: "경주경찰서 전, 의경 심리교육 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298894/%EA%B2%BD%EC%A3%BC%EA%B2%BD%EC%B0%B0%EC%84%9C_%EC%A0%84_%EC%9D%98%EA%B2%BD_%EC%8B%AC%EB%A6%AC%EA%B5%90%EC%9C%A1_1_vh0eap.jpg",
+    summary: "경주경찰서 전, 의경 심리교육 1차",
+    featured: false
+  },
+  {
+    id: 115,
+    category: "강연 및 특강",
+    title: "경주경찰서 전, 의경 심리교육 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298892/%EA%B2%BD%EC%A3%BC%EA%B2%BD%EC%B0%B0%EC%84%9C_%EC%A0%84_%EC%9D%98%EA%B2%BD_%EC%8B%AC%EB%A6%AC%EA%B5%90%EC%9C%A1_2_um3gbf.jpg",
+    summary: "경주경찰서 전, 의경 심리교육 2차",
+    featured: false
+  },
+  {
+    id: 116,
+    category: "강연 및 특강",
+    title: "계명문화대학교 고객심리 특강",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298898/%EA%B3%84%EB%AA%85%EB%AC%B8%ED%99%94%EB%8C%80%ED%95%99%EA%B5%90_%EA%B3%A0%EA%B0%9D%EC%8B%AC%EB%A6%AC_%ED%8A%B9%EA%B0%95_tdtkxg.jpg",
+    summary: "계명문화대학교 고객심리 특강 진행",
+    featured: false
+  },
+  {
+    id: 117,
+    category: "강연 및 특강",
+    title: "구미 경찰서 방범순찰대 전, 의경 정신건강상담 특강 진행 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298848/%EA%B5%AC%EB%AF%B8_%EA%B2%BD%EC%B0%B0%EC%84%9C_%EB%B0%A9%EB%B2%94%EC%88%9C%EC%B0%B0%EB%8C%80_%EC%A0%84_%EC%9D%98%EA%B2%BD_%EC%A0%95%EC%8B%A0%EA%B1%B4%EA%B0%95%EC%83%81%EB%8B%B4_%ED%8A%B9%EA%B0%95_%EC%A7%84%ED%96%89_151119_y1ehyl.jpg",
+    summary: "구미 경찰서 방범순찰대 전, 의경 정신건강상담 특강 1차",
+    featured: false
+  },
+  {
+    id: 118,
+    category: "강연 및 특강",
+    title: "구미 경찰서 방범순찰대 전, 의경 정신건강상담 특강 진행 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298846/%EA%B5%AC%EB%AF%B8_%EA%B2%BD%EC%B0%B0%EC%84%9C_%EB%B0%A9%EB%B2%94%EC%88%9C%EC%B0%B0%EB%8C%80_%EC%A0%84_%EC%9D%98%EA%B2%BD_%EC%A0%95%EC%8B%A0%EA%B1%B4%EA%B0%95%EC%83%81%EB%8B%B4_%ED%8A%B9%EA%B0%95_%EC%A7%84%ED%96%89_151119_2_owk3hy.jpg",
+    summary: "구미 경찰서 방범순찰대 전, 의경 정신건강상담 특강 2차",
+    featured: false
+  },
+  {
+    id: 119,
+    category: "강연 및 특강",
+    title: "구미경찰서 특강1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298900/%EA%B5%AC%EB%AF%B8%EA%B2%BD%EC%B0%B0%EC%84%9C_%ED%8A%B9%EA%B0%951_rknhyg.jpg",
+    summary: "구미경찰서 특강 1차",
+    featured: false
+  },
+  {
+    id: 120,
+    category: "강연 및 특강",
+    title: "구미정보고등학교 심리검사&진로적성검사와 진로교육 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298859/%EA%B5%AC%EB%AF%B8%EC%A0%95%EB%B3%B4%EA%B3%A0%EB%93%B1%ED%95%99%EA%B5%90_%EC%8B%AC%EB%A6%AC%EA%B2%80%EC%82%AC_%EC%A7%84%EB%A1%9C%EC%A0%81%EC%84%B1%EA%B2%80%EC%82%AC%EC%99%80_%EC%A7%84%EB%A1%9C%EA%B5%90%EC%9C%A1_1_eiqyij.jpg",
+    summary: "구미정보고등학교 심리검사 및 진로교육 1차",
+    featured: false
+  },
+  {
+    id: 121,
+    category: "강연 및 특강",
+    title: "구미정보고등학교 심리검사&진로적성검사와 진로교육 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298858/%EA%B5%AC%EB%AF%B8%EC%A0%95%EB%B3%B4%EA%B3%A0%EB%93%B1%ED%95%99%EA%B5%90_%EC%8B%AC%EB%A6%AC%EA%B2%80%EC%82%AC_%EC%A7%84%EB%A1%9C%EC%A0%81%EC%84%B1%EA%B2%80%EC%82%AC%EC%99%80_%EC%A7%84%EB%A1%9C%EA%B5%90%EC%9C%A1_2_vmfwmi.jpg",
+    summary: "구미정보고등학교 심리검사 및 진로교육 2차",
+    featured: false
+  },
+  {
+    id: 122,
+    category: "강연 및 특강",
+    title: "김천경찰서 315전경대 개인 및 집단 상담",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298883/%EA%B9%80%EC%B2%9C%EA%B2%BD%EC%B0%B0%EC%84%9C_315%EC%A0%84%EA%B2%BD%EB%8C%80_%EA%B0%9C%EC%9D%B8_%EB%B0%8F_%EC%A7%91%EB%8B%A8_%EC%83%81%EB%8B%B4_xfirab.jpg",
+    summary: "김천경찰서 315전경대 개인 및 집단 상담 진행",
+    featured: false
+  },
+  {
+    id: 123,
+    category: "강연 및 특강",
+    title: "서대구 다문화 가족 지원센터 출강",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775302611/%EC%84%9C%EB%8C%80%EA%B5%AC_%EB%8B%A4%EB%AC%B8%ED%99%94_%EA%B0%80%EC%A1%B1_%EC%A7%80%EC%9B%90%EC%84%BC%ED%84%B0_%EC%B6%9C%EA%B0%95_%EC%9C%A4%EC%98%81%EC%A4%80_%EC%9B%90%EC%9E%A5%EB%8B%98_ebdfvg.jpg",
+    summary: "서대구 다문화 가족 지원센터 출강 강의",
+    featured: false
+  },
+  {
+    id: 124,
+    category: "강연 및 특강",
+    title: "양산교육지원청Wee센터 부모교육",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298867/%EC%96%91%EC%82%B0%EA%B5%90%EC%9C%A1%EC%A7%80%EC%9B%90%EC%B2%ADWee%EC%84%BC%ED%84%B0_%EB%B6%80%EB%AA%A8%EA%B5%90%EC%9C%A1_hut8b6.jpg",
+    summary: "양산교육지원청 Wee센터 부모교육 특강",
+    featured: false
+  },
+  {
+    id: 125,
+    category: "강연 및 특강",
+    title: "울산 동구 정신건강증진센터에서 부모교육 특강실시 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298843/%EC%9A%B8%EC%82%B0_%EB%8F%99%EA%B5%AC_%EC%A0%95%EC%8B%A0%EA%B1%B4%EA%B0%95%EC%A6%9D%EC%A7%84%EC%84%BC%ED%84%B0%EC%97%90%EC%84%9C_%EB%B6%80%EB%AA%A8%EA%B5%90%EC%9C%A1_%ED%8A%B9%EA%B0%95%EC%8B%A4%EC%8B%9C_1_sv6nrl.jpg",
+    summary: "울산 동구 정신건강증진센터 부모교육 1차",
+    featured: false
+  },
+  {
+    id: 126,
+    category: "강연 및 특강",
+    title: "울산 동구 정신건강증진센터에서 부모교육 특강실시 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298841/%EC%9A%B8%EC%82%B0_%EB%8F%99%EA%B5%AC_%EC%A0%95%EC%8B%A0%EA%B1%B4%EA%B0%95%EC%A6%9D%EC%A7%84%EC%84%BC%ED%84%B0%EC%97%90%EC%84%9C_%EB%B6%80%EB%AA%A8%EA%B5%90%EC%9C%A1_%ED%8A%B9%EA%B0%95%EC%8B%A4%EC%8B%9C_2_uins69.jpg",
+    summary: "울산 동구 정신건강증진센터 부모교육 2차",
+    featured: false
+  },
+  {
+    id: 127,
+    category: "강연 및 특강",
+    title: "울산 삼남중학교 생명사랑존중교육 강의 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298876/%EC%9A%B8%EC%82%B0_%EC%82%BC%EB%82%A8%EC%A4%91%ED%95%99%EA%B5%90_%EC%83%9D%EB%AA%85%EC%82%AC%EB%9E%91%EC%A1%B4%EC%A4%91%EA%B5%90%EC%9C%A1_%EA%B0%95%EC%9D%98_1_utw9wt.jpg",
+    summary: "울산 삼남중학교 생명사랑존중교육 1차",
+    featured: false
+  },
+  {
+    id: 128,
+    category: "강연 및 특강",
+    title: "울산 삼남중학교 생명사랑존중교육 강의 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298874/%EC%9A%B8%EC%82%B0_%EC%82%BC%EB%82%A8%EC%A4%91%ED%95%99%EA%B5%90_%EC%83%9D%EB%AA%85%EC%82%AC%EB%9E%91%EC%A1%B4%EC%A4%91%EA%B5%90%EC%9C%A1_%EA%B0%95%EC%9D%98_2_sqwu8l.jpg",
+    summary: "울산 삼남중학교 생명사랑존중교육 2차",
+    featured: false
+  },
+  {
+    id: 129,
+    category: "강연 및 특강",
+    title: "전국 코레일 전담 심리상담사 워크샵",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298872/%EC%A0%84%EA%B5%AD_%EC%BD%94%EB%A0%88%EC%9D%BC_%EC%8B%AC%EB%A6%AC%EC%83%81%EB%8B%B4%EC%82%AC_%EC%9B%8C%ED%81%AC%EC%83%B5_al2doc.jpg",
+    summary: "전국 코레일 전담 심리상담사 워크샵 참여 및 강의",
+    featured: false
+  },
+  {
+    id: 130,
+    category: "강연 및 특강",
+    title: "울산 시청 특강 실시 하였습니다 주제 트라우마",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775302879/%EC%9A%B8%EC%82%B0_%EC%8B%9C%EC%B2%AD_%ED%8A%B9%EA%B0%95_%EC%8B%A4%EC%8B%9C_%ED%95%98%EC%98%80%EC%8A%B5%EB%8B%88%EB%8B%A4_%EC%A3%BC%EC%A0%9C%ED%8A%B8%EB%9D%BC%EC%9A%B0%EB%A7%88_rntnhp.jpg",
+    summary: "울산 시청 특강 (주제: 트라우마)",
+    featured: false
+  },
+  {
+    id: 131,
+    category: "강연 및 특강",
+    title: "월서 중학교 진로 특강 입니다",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298881/%EC%9B%94%EC%84%9C_%EC%A4%91%ED%95%99%EA%B5%90_%EC%A7%84%EB%A1%9C_%ED%8A%B9%EA%B0%95_%EC%9E%85%EB%8B%88%EB%8B%A4_v72hh1.jpg",
+    summary: "월서 중학교 진로 특강 진행",
+    featured: false
+  },
+  {
+    id: 132,
+    category: "강연 및 특강",
+    title: "직업인 초청 특강 동문고등학교에서 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298880/%EC%A7%81%EC%97%85%EC%9D%B8_%EC%B4%88%EC%B2%AD_%ED%8A%B9%EA%B0%951_%EB%8F%99%EB%AC%B8%EA%B3%A0%EB%93%B1%ED%95%99%EA%B5%90%EC%97%90%EC%84%9C_kfs9e2.jpg",
+    summary: "동문고등학교 직업인 초청 특강 1차",
+    featured: false
+  },
+  {
+    id: 133,
+    category: "강연 및 특강",
+    title: "직업인 초청 특강 동문고등학교에서 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298878/%EC%A7%81%EC%97%85%EC%9D%B8_%EC%B4%88%EC%B2%AD_%ED%8A%B9%EA%B0%951_%EB%8F%99%EB%AC%B8%EA%B3%A0%EB%93%B1%ED%95%99%EA%B5%90%EC%97%90%EC%84%9C_2_yf9bic.jpg",
+    summary: "동문고등학교 직업인 초청 특강 2차",
+    featured: false
+  },
+  {
+    id: 134,
+    category: "강연 및 특강",
+    title: "칠곡소방서 집단상담 1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298865/%EC%B9%A0%EA%B3%A1%EC%86%8C%EB%B0%A9%EC%84%9C_%EC%A7%91%EB%8B%A8%EC%83%81%EB%8B%B4_1_suugoy.jpg",
+    summary: "칠곡소방서 집단상담 1차",
+    featured: false
+  },
+  {
+    id: 135,
+    category: "강연 및 특강",
+    title: "칠곡소방서 집단상담 2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298863/%EC%B9%A0%EA%B3%A1%EC%86%8C%EB%B0%A9%EC%84%9C_%EC%A7%91%EB%8B%A8%EC%83%81%EB%8B%B4_2_gr4ndu.jpg",
+    summary: "칠곡소방서 집단상담 2차",
+    featured: false
+  },
+  {
+    id: 136,
+    category: "강연 및 특강",
+    title: "학남중 진로특강 실시1",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298870/%ED%95%99%EB%82%A8%EC%A4%91_%EC%A7%84%EB%A1%9C%ED%8A%B9%EA%B0%95_%EC%8B%A4%EC%8B%9C1_anfyva.jpg",
+    summary: "학남중 진로특강 1차",
+    featured: false
+  },
+  {
+    id: 137,
+    category: "강연 및 특강",
+    title: "학남중 진로특강 실시2",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775298869/%ED%95%99%EB%82%A8%EC%A4%91_%EC%A7%84%EB%A1%9C%ED%8A%B9%EA%B0%95_%EC%8B%A4%EC%8B%9C2_yiigii.jpg",
+    summary: "학남중 진로특강 2차",
+    featured: false
+  },
+  {
+    id: 1,
+    category: "방송 출연",
+    title: "KBS 뉴스 인터뷰 출연",
+    image: "https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?auto=format&fit=crop&q=80&w=600",
+    summary: "성범죄 심리상담 관련 전문가 인터뷰",
+    featured: false
+  },
+  {
+    id: 2,
+    category: "강연 및 특강",
+    title: "공공기관 심리교육 특강",
+    image: "https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&q=80&w=600",
+    summary: "재범방지 교육 및 심리치료 강연",
+    featured: false
+  },
+  {
+    id: 4,
+    category: "교육 및 프로그램",
+    title: "기업 임직원 성인지 감수성 교육",
+    image: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=600",
+    summary: "건강한 조직 문화를 위한 특강",
+    featured: false
+  },
+  {
+    id: 5,
+    category: "방송 출연",
+    title: "SBS 시사교양 프로그램 자문",
+    image: "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?auto=format&fit=crop&q=80&w=600",
+    summary: "범죄 심리 분석 및 행동 교정 자문",
+    featured: false
+  },
+  {
+    id: 6,
+    category: "강연 및 특강",
+    title: "대학교 범죄심리학 특강",
+    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80&w=600",
+    summary: "심리치료의 실제와 임상 사례",
+    featured: false
+  },
+  {
+    id: 7,
+    category: "라디오 및 인터뷰",
+    title: "TBN 교통방송 PD 님과 함께, 심리상담 코너 진행",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775294702/20190607_094719_fx6e6a.jpg",
+    summary: "TBN 교통방송 PD 님과 함께, 심리상담 코너 진행",
+    featured: false
+  },
+  {
+    id: 8,
+    category: "교육 및 프로그램",
+    title: "교정시설 재소자 교화 프로그램",
+    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=600",
+    summary: "인지왜곡 수정 및 행동 통제 훈련",
+    featured: false
+  },
+  {
+    id: 9,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 03월 15일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292903/%EB%8C%80%ED%86%B5%EB%A0%B9_%EC%84%A0%EA%B1%B0%EB%A5%BC_%ED%86%B5%ED%95%B4%EC%84%9C_%EB%90%98%EC%A7%9A%EC%96%B4%EB%B3%B4%EB%8A%94_%ED%88%AC%ED%91%9C_%EC%8B%AC%EB%A6%AC_zpm2rh.png",
+    summary: "『대통령 선거를 통해서 되짚어보는 투표 심리』 라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 10,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 03월 29일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292907/%EC%8B%AC%EB%A6%AC%ED%95%99_%EA%B4%80%EC%A0%90%EC%97%90%EC%84%9C_%EB%B0%94%EB%9D%BC%EB%B3%B4%EB%8A%94_%EC%8B%9C%EA%B0%84_dyn5uz.jpg",
+    summary: "『심리학 관점에서 바라보는 ‘시간’』 이라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 11,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 04월 12일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292905/%EB%B4%84%EB%A7%8C_%EB%90%98%EB%A9%B4_%EC%99%9C_%EC%9A%B0%EC%9A%B8%ED%95%A0%EA%B9%8C_%EA%B3%84%EC%A0%88%EC%84%B1_%EC%9A%B0%EC%9A%B8_jur08i.png",
+    summary: "『’봄만 되면 왜 우울할까? ‘계절성 우울’』 이라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 12,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 04월 26일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292910/%EB%82%B4%EA%B0%80_%ED%95%98%EB%A9%B4_%EB%A1%9C%EB%A7%A8%EC%8A%A4_%EB%82%A8%EC%9D%B4_%ED%95%98%EB%A9%B4_%EB%B6%88fbs_ysvvoh.jpg",
+    summary: "『내가 하면 로맨스, 남이 하면 불륜?! ‘내로남불’심리』 라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 13,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 05월 10일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292904/%EB%A7%88%EC%8A%A4%ED%81%AC%EC%8B%AC%EB%A6%AC_cvkl4y.png",
+    summary: "『마스크를 쓰고 벗는 얼굴속에 감춰진 심리』 라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 15,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 06월 07일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292909/%EA%B1%B4%EA%B0%95%ED%95%9C_%ED%8C%AC%EB%8D%A4_eoj2le.png",
+    summary: "『건강한 팬덤 문화를 위한 심리적 조언』 이라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 16,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 07월 05일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292906/%EC%84%B1%EC%9D%B8%EC%95%84%EC%9D%B4_jcuxyn.png",
+    summary: "『몸은 어른, 마음은 아이 ‘ 성인아이’』 라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 17,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 07월 19일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292905/%EB%B6%80%EB%B6%80%EC%9D%98%EC%82%EC%86%8C%ED%86%B5_wzc83z.png",
+    summary: "『부부간 의사소통을 위한 심리 조언』 이라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 18,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 08월 02일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292905/%EB%B9%84%EC%96%B8%EC%96%B4_jw6jea.png",
+    summary: "『비언어적 의사소통』 이라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 19,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 08월 16일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775300334/%EC%BD%9C%ED%8F%AC%EB%B9%84%EC%95%84_w16bxn.png",
+    summary: "『전화 공포증 ‘콜 포비아’』 라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 20,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 08월 30일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292907/%EC%95%84%EC%9D%B4%EC%97%90%EA%B2%8C_%ED%99%94%EB%82%B4%EB%8A%94_ykgs0e.png",
+    summary: "『아이에게 화를 내는 부모의 심리』 라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 21,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 09월 13일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292909/%EA%B0%80%EC%A1%B1%EC%9D%98_%EC%9D%98%EB%AF%B8_lksrzx.png",
+    summary: "『명절 연휴를 통해 되짚어보는 가족의 의미』 라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 22,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 09월 27일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292910/%EB%82%A8%EC%9D%84_%ED%96%89%EB%B3%B5%ED%95%98%EA%B2%8C_k7jubj.png",
+    summary: "『남을 행복하게 해주려는 마음』 이라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 23,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 10월 11일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775300469/%EC%B2%AD%EA%B0%9C%EA%B5%AC%EB%A6%AC_ejqpsc.png",
+    summary: "『반대로 하고 싶은 ‘청개구리 심리’』 라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 24,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 10월 25일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292906/%EC%86%8C%EB%B9%84%EC%8B%AC%EB%A6%AC%EC%9C%84%EC%B6%95_zvqo4w.png",
+    summary: "『위축되는 소비심리… 이유는?』 이라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 25,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 11월 08일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292911/%EB%8B%A4%EB%A5%B8_%EC%82%AC%EB%9E%8C%EA%B3%BC_%EB%B9%84%EA%B5%90_bedyv9.png",
+    summary: "『다른 사람과 비교하는 심리』 라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 26,
+    category: "라디오 및 인터뷰",
+    title: "라디오세상 울산만사 [ 2022년 11월 22일]",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775292906/%EC%8B%AB%EC%96%B4%ED%95%98%EB%8A%94_%EC%82%AC%EB%9E%8C%EC%9D%84_%EB%8B%AE%EB%8A%94_%EC%9D%B4%EC%9C%A0_lebvhk.png",
+    summary: "『사람들은 왜 싫어하는 사람을 닮아갈까?』 라는 주제로 방송하였습니다.",
+    featured: false
+  },
+  {
+    id: 301,
+    category: "강연 및 특강",
+    title: "문수실버복지관 강의",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775308068/%EB%AC%B8%EC%88%98%EC%8B%A4%EB%B2%84%EB%B3%B5%EC%A7%80%EA%B4%80_%EA%B0%95%EC%9D%98_ux66dl.png",
+    summary: "문수실버복지관 강의",
+    featured: false
+  },
+  {
+    id: 302,
+    category: "강연 및 특강",
+    title: "상주경찰서 의경 대상 심리상담 강의",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775307954/%EC%83%81%EC%A3%BC%EA%B2%BD%EC%B0%B0%EC%84%9C%EC%97%90%EC%84%9C_%EC%9D%98%EA%B2%BD%EC%9D%84_%EB%8C%80%EC%83%81%EC%9C%BC%EB%A1%9C_%EC%8B%AC%EB%A6%AC%EC%83%81%EB%8B%B4%EC%9D%98_%EC%8B%A4%EC%A0%9C%EC%97%90_%EB%8C%80%ED%95%B4_%EA%B0%95%EC%9D%98%EB%A5%BC_%ED%95%98%EC%98%80%EC%8A%B5%EB%8B%88%EB%8B%A4._mi1jtl.jpg",
+    summary: "상주경찰서에서 의경을 대상으로 심리상담의 실제에 대해 강의를 하였습니다.",
+    featured: false
+  }
+];
+
 const MediaActivityPage = () => {
-  const externalMediaUrl = "http://mindbrain.cafe24.com/%ec%bb%a4%eb%ae%a4%eb%8b%88%ed%8b%b0/%eb%b0%a9%ec%86%a1%ec%b6%9c%ec%97%b0%eb%8c%80%ec%99%b8%ed%99%9c%eb%8f%99/";
+  const [activeCategory, setActiveCategory] = useState("전체");
+  const [selectedItem, setSelectedItem] = useState<(typeof ACTIVITY_MEDIA_DATA)[number] | null>(null);
+  const categoryMenuRef = useRef<HTMLElement>(null);
+  const galleryRef = useRef<HTMLElement>(null);
+
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
+
+    if (category === "전체") {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      setTimeout(() => {
+        if (galleryRef.current) {
+          const element = galleryRef.current;
+          const stickyBarHeight = categoryMenuRef.current?.offsetHeight || 88;
+          const offset = stickyBarHeight + 16;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = element.getBoundingClientRect().top;
+          const elementPosition = elementRect - bodyRect;
+          const offsetPosition = elementPosition - offset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedItem(null);
+    };
+
+    if (selectedItem) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedItem]);
+
+  const filteredData = activeCategory === "전체"
+    ? ACTIVITY_MEDIA_DATA
+    : ACTIVITY_MEDIA_DATA.filter(item => item.category === activeCategory);
+
+  const featuredData = ACTIVITY_MEDIA_DATA.filter(item => item.featured);
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      className="bg-[#f7f9fb] min-h-screen"
-    >
-      {/* ① 상단 소개 영역 (Hero) */}
-      <section className="relative py-16 md:py-24 lg:py-32 text-white overflow-hidden bg-slate-900">
-        <div className="absolute inset-0 opacity-40">
-          <img 
-            src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/5cb3f455097954a32bb3e0d4ff55aaad.png" 
-            alt="Media Activities Hero Background" 
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-        </div>
+    <div className="bg-slate-50 min-h-screen">
+      {/* 1. Hero Section */}
+      <section
+        className="relative pt-24 pb-16 md:pt-32 md:pb-24 border-b border-slate-100 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url("https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775281989/5cb3f455097954a32bb3e0d4ff55aaad_vifxd5.png")' }}
+      >
+        <div className="absolute inset-0 bg-slate-900/60" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 break-keep">방송 · 대외활동</h1>
-          <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl break-keep">
-            센터의 방송 출연 및 다양한 대외활동 내용을 확인하실 수 있습니다.
-          </p>
-          <div className="mt-8 space-y-4">
-            <p className="text-base text-slate-300 leading-relaxed break-keep">
-              센터는 다양한 방송과 언론, 강연 및 교육 활동 등을 통해
-              <br className="hidden sm:block" />
-              심리 상담과 재범 방지 교육의 중요성을 알리는 활동을 하고 있습니다.
-            </p>
-            <p className="text-base text-slate-300 leading-relaxed break-keep">
-              방송 출연 및 대외활동 관련 내용은
-              <br className="hidden sm:block" />
-              별도의 페이지에서 확인하실 수 있습니다.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ② 방송 / 대외활동 바로가기 카드 */}
-      <section className="py-16 md:py-24 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white p-6 md:p-10 rounded-3xl md:rounded-[40px] shadow-xl border border-slate-100 hover:shadow-2xl transition-all duration-300 flex flex-col items-center justify-center text-center">
-            <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-4 break-keep">방송 및 대외활동 보기</h3>
-            <p className="text-base md:text-lg text-slate-500 leading-relaxed mb-8 break-keep">
-              센터의 방송 출연, 인터뷰, 강연 활동 등
-              <br className="hidden sm:block" />
-              다양한 대외활동 내용을 확인하실 수 있습니다.
-            </p>
-            <a 
-              href={externalMediaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-8 py-4 md:px-12 md:py-5 bg-[#1565C0] text-white font-bold rounded-2xl hover:bg-[#115599] transition-all shadow-lg shadow-blue-200 active:scale-95 text-center"
+          <div className="text-center max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 text-white text-sm font-black mb-6 backdrop-blur-md border border-white/30"
             >
-              방송 / 대외활동 페이지 바로가기
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ③ 활동 분야 안내 아이콘 영역 */}
-      <section className="py-16 md:py-24 lg:py-32 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12">
-            <div className="text-center p-6 md:p-8 rounded-3xl md:rounded-[40px] bg-[#f7f9fb] border border-slate-100 shadow-sm">
-              <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white text-[#1565C0] flex items-center justify-center mx-auto mb-6 shadow-md">
-                <Monitor className="w-7 h-7 md:w-8 md:h-8" />
-              </div>
-              <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-3 break-keep">방송 출연</h3>
-              <p className="text-slate-500 leading-relaxed break-keep">TV 및 언론 인터뷰</p>
-            </div>
-            <div className="text-center p-6 md:p-8 rounded-3xl md:rounded-[40px] bg-[#f7f9fb] border border-slate-100 shadow-sm">
-              <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white text-[#1565C0] flex items-center justify-center mx-auto mb-6 shadow-md">
-                <GraduationCap className="w-7 h-7 md:w-8 md:h-8" />
-              </div>
-              <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-3 break-keep">강연 및 교육 활동</h3>
-              <p className="text-slate-500 leading-relaxed break-keep">재범방지 교육 및 심리 교육</p>
-            </div>
-            <div className="text-center p-6 md:p-8 rounded-3xl md:rounded-[40px] bg-[#f7f9fb] border border-slate-100 shadow-sm">
-              <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white text-[#1565C0] flex items-center justify-center mx-auto mb-6 shadow-md">
-                <Users className="w-7 h-7 md:w-8 md:h-8" />
-              </div>
-              <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-3 break-keep">전문가 활동</h3>
-              <p className="text-slate-500 leading-relaxed break-keep">심리 상담 및 연구 활동</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ④ 활동 안내 설명 */}
-      <section className="py-16 md:py-24 lg:py-32 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-6 md:mb-8 break-keep">활동 안내</h2>
-            <p className="text-base md:text-lg text-slate-600 leading-relaxed mb-8 break-keep">
-              센터의 방송 및 대외활동은 심리 상담의 중요성과 건강한 사회 인식 형성을 위한 활동입니다.
-              <br className="hidden sm:block" />
-              관련 활동 내용은 별도의 페이지에서 확인하실 수 있습니다.
-            </p>
-            <a 
-              href={externalMediaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[#1565C0] font-bold hover:underline text-base md:text-lg"
+              <Play className="w-4 h-4" />
+              Official Archive
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight break-keep drop-shadow-lg"
             >
-              방송 / 대외활동 페이지 바로가기 <ArrowRight className="w-5 h-5" />
-            </a>
+              대표원장 방송 출연 · 강연
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-lg md:text-xl text-slate-200 leading-relaxed break-keep font-medium drop-shadow-md"
+            >
+              윤영준 대표원장의 방송 출연, 강연, 인터뷰, 라디오, 교육 활동을 체계적으로 정리한 공식 아카이브 페이지입니다. 방송, 강연, 인터뷰, 교육 프로그램 등 다양한 현장에서의 실제 활동 기록을 확인하실 수 있습니다.
+            </motion.p>
           </div>
         </div>
       </section>
 
-      {/* ⑤ 문의 안내 */}
-      <section className="py-16 md:py-24 lg:py-32 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-6 md:mb-8 break-keep">문의 안내</h2>
-          <p className="text-base md:text-lg text-slate-600 leading-relaxed mb-10 md:mb-12 break-keep">
-            방송 인터뷰 요청, 강연 문의, 협력 문의가 필요한 경우
-            <br className="hidden sm:block" />
-            센터로 연락 주시면 안내해 드립니다.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
-            <a 
+      {/* 2. Category Filter */}
+      <section
+        ref={categoryMenuRef}
+        className="py-6 md:py-8 sticky top-0 z-40 bg-slate-50/90 backdrop-blur-md border-b border-slate-200"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap md:flex-nowrap md:overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-2 md:gap-3 pb-2 -mb-2 justify-center md:justify-start">
+            {ACTIVITY_CATEGORIES.map((category) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryChange(category)}
+                className={`whitespace-nowrap px-3.5 py-2 md:px-6 md:py-2.5 rounded-full text-[13px] md:text-sm font-bold transition-all cursor-pointer ${
+                  activeCategory === category
+                    ? 'bg-[#1565C0] text-white shadow-md'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:border-[#1565C0]/30 hover:bg-blue-50/50'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Featured Section */}
+      {activeCategory === "전체" && (
+        <section className="py-16 md:py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-4 mb-10">
+              <h2 className="text-2xl font-black text-slate-900">대표 활동</h2>
+              <div className="h-px bg-slate-200 flex-grow" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+              {featuredData.map((item, idx) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="group cursor-pointer"
+                  onClick={() => setSelectedItem(item)}
+                >
+                  <div className="aspect-video rounded-2xl overflow-hidden mb-5 relative bg-slate-200">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-transparent transition-colors duration-500" />
+                  </div>
+                  <div className="space-y-2">
+                    <span className="text-xs font-black text-[#1565C0] tracking-wider uppercase">{item.category}</span>
+                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-[#1565C0] transition-colors line-clamp-2 break-keep">{item.title}</h3>
+                    <p className="text-sm text-slate-500 line-clamp-1">{item.summary}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 4. All Archive Gallery */}
+      <section ref={galleryRef} className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-4 mb-10">
+            <h2 className="text-2xl font-black text-slate-900">
+              {activeCategory === "전체" ? "전체 아카이브" : activeCategory}
+            </h2>
+            <div className="h-px bg-slate-200 flex-grow" />
+          </div>
+
+          {activeCategory === "전체" ? (
+            <div className="space-y-16">
+              {ACTIVITY_CATEGORIES.filter(c => c !== "전체").map((category) => {
+                const categoryItems = ACTIVITY_MEDIA_DATA.filter(item => item.category === category);
+                if (categoryItems.length === 0) return null;
+
+                return (
+                  <div key={category}>
+                    <h3 className="text-xl font-bold text-slate-800 mb-6 border-l-4 border-[#1565C0] pl-3">
+                      {category}
+                    </h3>
+                    <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+                      <AnimatePresence mode="popLayout">
+                        {categoryItems.slice(0, 8).map((item) => (
+                          <motion.div
+                            key={item.id}
+                            layout
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.3 }}
+                            className="group cursor-pointer"
+                            onClick={() => setSelectedItem(item)}
+                          >
+                            <div className="aspect-[4/3] rounded-xl overflow-hidden mb-4 relative bg-slate-100">
+                              <img
+                                src={item.image}
+                                alt={item.title}
+                                loading="lazy"
+                                referrerPolicy="no-referrer"
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <span className="text-[11px] font-black text-slate-400 tracking-wider uppercase">{item.category}</span>
+                              <h3 className="text-base font-bold text-slate-900 group-hover:text-[#1565C0] transition-colors line-clamp-2 break-keep leading-snug">{item.title}</h3>
+                              <p className="text-sm text-slate-500 line-clamp-1">{item.summary}</p>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </motion.div>
+
+                    {categoryItems.length > 8 && (
+                      <div className="mt-10 flex justify-center">
+                        <button
+                          onClick={() => handleCategoryChange(category)}
+                          className="px-8 py-3 rounded-full border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 hover:border-[#1565C0]/30 transition-all flex items-center gap-2 cursor-pointer"
+                        >
+                          {category} 더보기
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+              <AnimatePresence mode="popLayout">
+                {filteredData.map((item) => (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                    className="group cursor-pointer"
+                    onClick={() => setSelectedItem(item)}
+                  >
+                    <div className="aspect-[4/3] rounded-xl overflow-hidden mb-4 relative bg-slate-100">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <span className="text-[11px] font-black text-slate-400 tracking-wider uppercase">{item.category}</span>
+                      <h3 className="text-base font-bold text-slate-900 group-hover:text-[#1565C0] transition-colors line-clamp-2 break-keep leading-snug">{item.title}</h3>
+                      <p className="text-sm text-slate-500 line-clamp-1">{item.summary}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </div>
+      </section>
+
+      {/* 5. SEO Text Section */}
+      <section className="py-20 bg-slate-50 border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-slate-100">
+            <h2 className="text-xl md:text-2xl font-black text-slate-900 mb-6">대표원장 방송 출연 및 강연 기록</h2>
+            <div className="space-y-6 text-slate-600 leading-relaxed break-keep">
+              <p>
+                본 페이지는 윤영준 대표원장의 방송 출연, 심리상담 관련 인터뷰, 공공기관 및 교육기관 강연, 재범방지 교육 활동 등을 기록한 공식 아카이브입니다.
+              </p>
+              <p>
+                윤영준 대표원장은 <span className="font-bold text-slate-900">MBC, KBS, EBS, JTBC, MBN, tvN, 채널A, TV조선, TBN 교통방송, 연합뉴스</span> 등 국내 주요 방송사 및 언론에 80회 이상 출연하며 심리상담 전문가로서 다양한 현장에서 사람들의 이야기를 함께 나누어 왔습니다.
+              </p>
+              <p>
+                특히 <span className="font-bold text-slate-900">KBS 라디오 「4시에 힐링타임」, 「생방송 정보스펀지」, TBN 교통방송 「Talk 터놓고 말해요」, 「가족의 세계(심리코너)」</span> 등 여러 프로그램을 8년 이상 진행하며, 누구나 공감할 수 있는 언어로 마음을 이해하고 풀어내는 시간을 이어왔습니다.
+              </p>
+              <p>
+                이러한 방송과 강연은 단순한 정보 전달을 넘어, 실제 삶에 도움이 되는 방향을 함께 찾아가는 과정이었습니다.
+              </p>
+              <p>
+                일부 자료는 현재도 재방영 및 온라인을 통해 확인할 수 있습니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. CTA Section */}
+      <section className="py-24 bg-slate-900 text-white text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-black mb-4 break-keep">전문 강연 및 방송 출연이 필요하신가요?</h2>
+          <p className="text-lg text-slate-400 mb-10 break-keep">공공기관, 기업, 교육기관을 위한 심리교육 및 특강을 진행하고 있습니다.</p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <a
               href={`tel:${CONTACT_PHONE}`}
-              className="w-full sm:w-auto px-8 py-4 md:px-12 md:py-5 bg-[#1565C0] text-white font-bold rounded-2xl hover:bg-[#115599] transition-all shadow-lg shadow-blue-200 active:scale-95 flex items-center justify-center gap-2"
+              className="px-8 py-4 rounded-full bg-[#1565C0] hover:bg-[#115599] text-white font-bold shadow-lg transition-all flex items-center justify-center gap-2"
             >
               <PhoneCall className="w-5 h-5" />
-              문의하기 ({CONTACT_PHONE})
+              문의하기 {CONTACT_PHONE}
+            </a>
+            <a
+              href={NAVER_PLACE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 rounded-full bg-[#163d7a] hover:bg-[#1565C0] text-white font-bold border border-blue-400/30 shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <MessageSquare className="w-5 h-5" />
+              상담 신청
             </a>
           </div>
         </div>
       </section>
-    </motion.div>
+
+      {/* 7. Image Popup Modal */}
+      <AnimatePresence>
+        {selectedItem && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedItem(null)}
+            className="fixed inset-0 z-[100] bg-slate-900/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
+          >
+            <motion.div
+              initial={{ scale: 0.94, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.94, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-4xl w-full max-h-[90vh] bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col cursor-default"
+            >
+              <button
+                type="button"
+                onClick={() => setSelectedItem(null)}
+                className="absolute top-3 right-3 z-20 w-9 h-9 rounded-full bg-slate-900/70 hover:bg-slate-900 text-white flex items-center justify-center transition-colors shadow-md cursor-pointer"
+                aria-label="이미지 닫기"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="bg-slate-950 flex items-center justify-center overflow-hidden">
+                <img
+                  src={selectedItem.image}
+                  alt={selectedItem.title}
+                  referrerPolicy="no-referrer"
+                  className="max-w-full max-h-[65vh] w-auto object-contain"
+                />
+              </div>
+              <div className="p-5 sm:p-6 bg-white border-t border-slate-100 overflow-y-auto space-y-2">
+                <span className="inline-block text-xs font-black text-[#1565C0] tracking-wider uppercase">
+                  {selectedItem.category}
+                </span>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug break-keep">
+                  {selectedItem.title}
+                </h3>
+                {selectedItem.summary && (
+                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed break-keep">
+                    {selectedItem.summary}
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 
+interface PartnerItem {
+  name: string;
+  url: string;
+  image?: string;
+}
+
+interface PartnerSection {
+  title: string;
+  items: PartnerItem[];
+}
+
+const PARTNER_SECTIONS: PartnerSection[] = [
+  {
+    title: "공공기관 및 유관기관",
+    items: [
+      {
+        name: "대검찰청",
+        url: "https://www.spo.go.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775208774/%ED%99%94%EB%A9%B4_%EC%BA%A1%EC%B2%98_2026-04-03_165954_iuzr0z.png"
+      },
+      {
+        name: "경북북부교도소",
+        url: "https://www.corrections.go.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775029521/ChatGPT_Image_2026%EB%85%84_4%EC%9B%94_1%EC%9D%BC_%EC%98%A4%ED%9B%84_04_45_05_m125fo.png"
+      },
+      {
+        name: "대구가정법원",
+        url: "https://dgfamily.scourt.go.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775044656/logo_gibhqm.png"
+      },
+      {
+        name: "대구광역시",
+        url: "https://www.daegu.go.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775106397/%EC%8B%AC%EB%B2%8C%EB%A1%9C%EA%B3%A0%EC%A1%B0%ED%95%A9_dgtm0l.png"
+      },
+      {
+        name: "대구광역시 교육청",
+        url: "https://www.dge.go.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775034616/Daegu_Metropolitan_Office_of_Education_Logo__vertical.svg_de9yzu.png"
+      },
+      {
+        name: "구미경찰서",
+        url: "https://www.gbpolice.go.kr/gm/index.do",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775049813/ChatGPT_Image_2026%EB%85%84_4%EC%9B%94_1%EC%9D%BC_%EC%98%A4%ED%9B%84_10_21_22_y3zmxw.png"
+      },
+      {
+        name: "김천경찰서",
+        url: "https://www.gbpolice.go.kr/gc/index.do",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775035271/76761_46193_5823_jbroqw.jpg"
+      },
+      {
+        name: "성주경찰서",
+        url: "https://www.gbpolice.go.kr/sj/index.do",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775371843/ChatGPT_Image_2026%EB%85%84_4%EC%9B%94_1%EC%9D%BC_%EC%98%A4%ED%9B%84_10_30_46_yi5w0l_paiqye.png"
+      },
+      {
+        name: "경북자립지원전담기관",
+        url: "https://www.kbjarip.or.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775108360/ChatGPT_Image_2026%EB%85%84_4%EC%9B%94_1%EC%9D%BC_%EC%98%A4%ED%9B%84_03_52_15_qncqwz.png"
+      },
+      {
+        name: "경상북도 소방본부",
+        url: "https://gb119.go.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775050128/ChatGPT_Image_2026%EB%85%84_4%EC%9B%94_1%EC%9D%BC_%EC%98%A4%ED%9B%84_10_28_38_tbz3pv.png"
+      },
+      {
+        name: "구미시",
+        url: "https://www.gumi.go.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775106397/2021051414001839942_l_zhbpdi.jpg"
+      },
+      {
+        name: "김천시",
+        url: "https://www.gc.go.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775107339/1709611612765527_jhy58j.jpg"
+      },
+      {
+        name: "한국산림복지진흥원",
+        url: "https://www.fowi.or.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775026406/%ED%99%94%EB%A9%B4_%EC%BA%A1%EC%B2%98_2026-04-01_155124_cun9ie.png"
+      },
+      {
+        name: "울산광역시교육청",
+        url: "https://use.go.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775106408/Ulsan_Metropolitan_Office_of_Education_Logo__vertical.svg_rxkoah.png"
+      },
+      {
+        name: "도산도서관",
+        url: "https://www.ulsannamgu.go.kr/library/",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775026416/ChatGPT_Image_2026%EB%85%84_4%EC%9B%94_1%EC%9D%BC_%EC%98%A4%ED%9B%84_03_38_44_kta3nq.png"
+      },
+      {
+        name: "한국교직원공제회",
+        url: "https://www.ktcu.or.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775110776/1-06_%EA%B5%AD%EB%AC%B8%EC%8B%9C%EA%B7%B8%EB%8B%88%EC%B2%98_%EC%83%81%ED%95%98%EA%B8%B0%EB%B3%B8%ED%98%95_xaebzn.jpg"
+      },
+      {
+        name: "경북고용성장지원센터",
+        url: "http://kdscjob.or.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775370945/%EA%B2%BD%EB%B6%81%EA%B3%A0%EC%9A%A9%EC%84%B1%EC%9E%A5%EC%A7%80%EC%9B%90%EC%84%BC%ED%84%B0_%EB%A1%9C%EA%B3%A0_1__2021102093716_ownuux.png"
+      }
+    ]
+  },
+  {
+    title: "법률기관 -협약 및 양형자료 제공",
+    items: [
+      {
+        name: "법무법인 로하스",
+        url: "https://lohas-law.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775047909/KakaoTalk_20210501_115331134_1_ppiuf2.jpg"
+      },
+      {
+        name: "법무법인 소울",
+        url: "https://www.soullaw.co.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775047795/%EC%86%8C%EC%9A%B8_%EB%A1%9C%EA%B3%A0_s6wvju.png"
+      },
+      {
+        name: "법무법인 효성",
+        url: "https://www.hyosunglaw.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775048089/channels4_profile_xud3rd.jpg"
+      },
+      {
+        name: "법무법인 안팍",
+        url: "https://www.ahnparkcrime.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775046813/0D.43742774.1_pkrc6o.webp"
+      },
+      {
+        name: "법무법인 동주",
+        url: "https://dongju-lawfirm.com/",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775046880/qakhuz_jvzw-h0clsn_logo_vrlnjr.png"
+      },
+      {
+        name: "법무법인 YK",
+        url: "https://www.yklawfirm-crime.co.kr/",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775046992/8d2ece49bcd7fb061177e44e464b9c23_v3tz0f.png"
+      },
+      {
+        name: "법무법인 조율",
+        url: "https://joyullaw.co.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775047068/20160906_182634_y7nrsj.jpg"
+      },
+      {
+        name: "법무법인 예문정앤파트너스",
+        url: "https://search.naver.com/search.naver?query=%EB%B2%95%EB%AC%B4%EB%B2%95%EC%9D%B8+%EC%98%88%EB%AC%B8%EC%A0%95%EC%95%A4%ED%8C%8C%ED%8A%B8%EB%84%88%EC%8A%A4",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775047313/%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C_9_qv3cbr.jpg"
+      },
+      {
+        name: "법무법인 가나다",
+        url: "http://www.ganadalaw.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775047378/42233%EB%8C%80%EC%A7%80_169_bspdqq.jpg"
+      },
+      {
+        name: "더킴로펌",
+        url: "https://thekim.co.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775047490/profileImage_gizmtd.png"
+      },
+      {
+        name: "법무법인 대륜",
+        url: "https://www.daeryunlaw.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775047562/2021073014260111_izxbrm.avif"
+      }
+    ]
+  },
+  {
+    title: "교육기관",
+    items: [
+      {
+        name: "광운대학교",
+        url: "https://www.kw.ac.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775208775/Seal_3D-type_lkm7qd.png"
+      },
+      {
+        name: "구미대학교",
+        url: "https://www.gumi.ac.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775208775/%ED%99%94%EB%A9%B4_%EC%BA%A1%EC%B2%98_2026-04-03_170130_tlytqt.png"
+      },
+      {
+        name: "금오공과대학교",
+        url: "https://www.kumoh.ac.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775055378/img_ci03_pc_1_fo68ol.jpg"
+      },
+      {
+        name: "동국대학교",
+        url: "https://www.dongguk.edu",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775032778/symbol_01_1_jzh3rr.png"
+      },
+      {
+        name: "영진사이버대학교",
+        url: "https://www.ycc.ac.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775218764/ChatGPT_Image_2026%EB%85%84_4%EC%9B%94_1%EC%9D%BC_%EC%98%A4%ED%9B%84_06_20_23_xzx7jj_u9pfha.png"
+      },
+      {
+        name: "부산디지털대학교",
+        url: "https://www.bdu.ac.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775046633/%EC%A0%9C%EB%AA%A9_%EC%97%86%EC%9D%8C_lgknb0.png"
+      },
+      {
+        name: "상주대학교",
+        url: "https://www.knu.ac.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775277906/%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C_1_v0kdya.jpg"
+      },
+      {
+        name: "부산외국어대학교",
+        url: "https://www.bufs.ac.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775282540/0S5zqzZ3OZ0sDrUNrwOY4VPNA0JXBATRC_lutxzgtHjFdn0EO1POXAi-yEwwEcbrM0xNxequghYxGTE-mYclqlBjbw_XVLmpWHom5V9tUnOlNeqT-jr-BgXzkF95zpKE5u_-htBqRvEAgSK6TcblOw_leu6dr.webp"
+      },
+      {
+        name: "춘해보건대학교",
+        url: "https://www.ch.ac.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775283202/2015_73076000_1440825192922_szd3ef.jpg"
+      },
+      {
+        name: "한국폴리텍대학교",
+        url: "https://www.kopo.ac.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775283430/2016-09-21_17-48-47_vclflo.jpg"
+      }
+    ]
+  },
+  {
+    title: "기업",
+    items: [
+      {
+        name: "삼성전자",
+        url: "https://www.samsung.com/sec",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775208762/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90%EB%A1%9C%EA%B3%A0_taigm8.jpg"
+      },
+      {
+        name: "삼성SDI",
+        url: "https://www.samsungsdi.co.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775208763/1307022_635021_74_thheyi.jpg"
+      },
+      {
+        name: "삼성탈레스",
+        url: "https://www.hanwhasystems.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775208754/%ED%99%94%EB%A9%B4_%EC%BA%A1%EC%B2%98_2026-04-03_172451_iv50pl.png"
+      },
+      {
+        name: "LG전자",
+        url: "https://www.lge.co.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775208754/%ED%99%94%EB%A9%B4_%EC%BA%A1%EC%B2%98_2026-04-03_172717_dpk2rd.png"
+      },
+      {
+        name: "기아자동차",
+        url: "https://www.kia.com/kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775283654/%ED%99%94%EB%A9%B4_%EC%BA%A1%EC%B2%98_2026-04-04_151917_itkmwn.png"
+      },
+      {
+        name: "웅진코웨이",
+        url: "https://www.coway.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775029714/%ED%99%94%EB%A9%B4_%EC%BA%A1%EC%B2%98_2026-04-01_164820_w6ohae.png"
+      },
+      {
+        name: "코레일",
+        url: "https://www.korail.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775032592/sign_4_mgmxmn.png"
+      },
+      {
+        name: "성진포머",
+        url: "http://www.sjfoma.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775031588/%EB%A1%9C%EA%B3%A0_20080213083914_phbofg.jpg"
+      },
+      {
+        name: "한화시스템",
+        url: "https://www.hanwhasystems.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775030072/%ED%99%94%EB%A9%B4_%EC%BA%A1%EC%B2%98_2026-04-01_165426_vfbzcq.png"
+      },
+      {
+        name: "순천향대학교 구미병원",
+        url: "https://www.schmc.ac.kr/gumi",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775029928/%EC%88%9C%EC%B2%9C%ED%96%A5%EB%8C%80%ED%95%99%EA%B5%90_%EA%B5%AC%EB%AF%B8%EB%B3%91%EC%9B%90_%EA%B5%AD%EB%AC%B8_%EC%84%B8%EB%A1%9C_j8brvd.jpg"
+      },
+      {
+        name: "코리아세븐",
+        url: "https://www.7-eleven.co.kr",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775118793/18680416d1909c8dc0450c8e1b3c074d131f32a688076fc4db8edca1d879518c_warzh9.webp"
+      },
+      {
+        name: "아모레퍼시픽",
+        url: "https://www.apgroup.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775119159/7083658_180942_2659_rxrac8.jpg"
+      },
+      {
+        name: "쿠팡",
+        url: "https://www.coupang.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775119160/coupang-bi-brand-logo-230109-01_szk7vn.jpg"
+      }
+    ]
+  },
+  {
+    title: "심리상담 및 웰니스 기관",
+    items: [
+      {
+        name: "TELUS Health",
+        url: "https://www.telushealth.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775112935/ChatGPT_Image_2026%EB%85%84_4%EC%9B%94_2%EC%9D%BC_%EC%98%A4%ED%9B%84_03_55_33_garp5i.png"
+      },
+      {
+        name: "한국심리상담센터 KPCC",
+        url: "https://www.mykpcc.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775031507/%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C_wcijfi.png"
+      },
+      {
+        name: "구미Wee센터",
+        url: "https://www.gbe.kr/gbeee",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775033817/ChatGPT_Image_2026%EB%85%84_4%EC%9B%94_1%EC%9D%BC_%EC%98%A4%ED%9B%84_05_55_15_gsvezi.png"
+      },
+      {
+        name: "이지앤웰니스",
+        url: "https://www.eznwellness.com",
+        image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1775218297/2102151025114130_a8a7lk.jpg"
+      }
+    ]
+  }
+];
+
+const PartnersPage = () => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    className="bg-[#f8f9fb] min-h-screen"
+  >
+    {/* 상단 헤더 */}
+    <header className="pt-20 pb-14 lg:pt-24 lg:pb-16 px-4 sm:px-6 lg:px-8 text-center">
+      <div className="max-w-3xl mx-auto">
+        <motion.h1
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          className="text-3xl sm:text-4xl lg:text-[42px] font-black text-slate-900 tracking-tight mb-6 break-keep"
+        >
+          협력 · 협약 · 출강 기관
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.08 }}
+          className="text-sm sm:text-[15px] text-slate-500 leading-[1.8] break-keep"
+        >
+          MHS 심리상담센터 산하 창원 성범죄심리상담센터는<br className="hidden sm:inline" />{" "}
+          27년 이상의 임상 경험과 200여 개 공공기관·법률기관·교육기관·기업과의 협력 실적을 기반으로<br className="hidden sm:inline" />{" "}
+          신뢰할 수 있는 전문 상담과 재범방지 교육을 제공하고 있습니다.
+        </motion.p>
+      </div>
+    </header>
+
+    {/* 기관 섹션 목록 */}
+    <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 lg:pb-32 space-y-16">
+      {PARTNER_SECTIONS.map((section, sectionIdx) => (
+        <section key={section.title}>
+          <h2 className="text-base sm:text-lg font-bold text-slate-800 border-b border-slate-200/80 pb-3.5 mb-8">
+            {section.title}
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+            {section.items.map((item, idx) => (
+              <motion.a
+                key={`${sectionIdx}-${item.name}`}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`${item.name} 홈페이지 바로가기`}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{ duration: 0.3, delay: Math.min(idx * 0.02, 0.25) }}
+                className="group relative bg-white rounded-2xl border border-slate-100/90 p-2.5 sm:p-3 h-32 sm:h-36 flex flex-col items-center justify-center transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-200 cursor-pointer overflow-hidden"
+              >
+                <span className="absolute top-2 right-2 z-10 text-slate-300 opacity-0 group-hover:opacity-100 group-hover:text-[#4F46E5] transition-all duration-300">
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </span>
+                {item.image ? (
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-contain transition-transform duration-300 ease-out group-hover:scale-105"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <span className="text-sm sm:text-[15px] font-bold text-slate-700 group-hover:text-[#4F46E5] transition-colors text-center break-keep leading-snug px-2">
+                    {item.name}
+                  </span>
+                )}
+              </motion.a>
+            ))}
+          </div>
+        </section>
+      ))}
+    </main>
+  </motion.div>
+);
+
+interface ExpertSection {
+  heading: string;
+  items: string[];
+}
+
+interface ExpertItem {
+  id: string;
+  name: string;
+  modalTitle?: string;
+  role: string;
+  modalSubtitle?: string;
+  image: string;
+  desc: string;
+  profilePath?: string;
+  imgClassName?: string;
+  sections?: ExpertSection[];
+}
+
+const LEADERSHIP_EXPERTS: ExpertItem[] = [
+  {
+    id: "yoon-youngjun",
+    name: "윤영준 원장",
+    role: "상담학 박사 / 국제 임상최면치료사",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346422/ChatGPT_Image_2026%EB%85%84_3%EC%9B%94_1%EC%9D%BC_%EC%98%A4%ED%9B%84_10_34_52_ydee1z.png",
+    desc: "성범죄 상담 경력 25년 이상, 법원 촉탁 상담위원 역임.",
+    profilePath: "/about/profile",
+    imgClassName: "object-[51%_39%] scale-[1.8] origin-[51%_39%]"
+  },
+  {
+    id: "so-yunjoo",
+    name: "소윤주 부원장",
+    role: "기능의학 / 최면 / 성상담 전문가",
+    image: "https://mhsjoy.mycafe24.com/wp-content/uploads/2024/05/KakaoTalk_20240521_123825759.jpg",
+    desc: "기능의학 기반의 심신 통합 치유 전문가.",
+    profilePath: "/about/vice-profile"
+  }
+];
+
+const ADVISORY_AND_COUNSELOR_EXPERTS: ExpertItem[] = [
+  {
+    id: "heo-seonmu",
+    name: "허선무 변호사",
+    modalTitle: "허선무 변호사",
+    role: "법무법인 소울 변호사 / 성범죄 전문 변호사",
+    modalSubtitle: "법무법인 소울 변호사 / 성범죄 전문 변호사",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346463/member_view23_nnxzhn.jpg",
+    desc: "현재 법무법인 소울 변호사, 창원지방법원 조정위원, 창원지방검찰청 형사조정위원, 대한법률구조공단 구조위원 역임.",
+    sections: [
+      {
+        heading: "주요 경력 및 활동",
+        items: [
+          "사법연수원 44기 수료",
+          "창원지방법원 민사조정위원",
+          "창원지방검찰청 검사직무대리",
+          "창원지방법원 국선변호인",
+          "대한법률구조공단 창원지부 구조위원",
+          "김해중부경찰서 수사민원상담센터 상담변호사",
+          "경남 농아인협회 창원지회 자문위원",
+          "창원지방검찰청 형사조정위원",
+          "이혼·상속 전문변호사 등록",
+          "법무법인 소울 변호사"
+        ]
+      }
+    ]
+  },
+  {
+    id: "kang-joooh",
+    name: "강주오 변호사",
+    modalTitle: "강주오 대표 변호사",
+    role: "법무법인 로하스 대표변호사",
+    modalSubtitle: "現 법무법인 로하스 대표변호사",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1776971476/73290c9b-6542-4f47-9ea0-ec8be1861807_plqybw.png",
+    desc: "경북도청 및 구미시 법률상담관, 구미시의회 고문변호사.",
+    sections: [
+      {
+        heading: "학력",
+        items: [
+          "대아고등학교 졸업",
+          "성균관대학교 졸업 (행정학사, 경제학사)",
+          "동아대학교 법학전문대학원 졸업"
+        ]
+      },
+      {
+        heading: "경력",
+        items: [
+          "現 법무법인 로하스 대표변호사",
+          "現 법무부 창조경제혁신센터 법률지원단 자문 변호사",
+          "現 법무부 남북하나재단 북한이탈주민 지원 변호인",
+          "現 경북하나센터, 대구하나센터 고문변호사",
+          "現 삼성연합의원 탑/예스정형외과의원 등 다수 병원 자문",
+          "現 옥계아동병원 자문",
+          "現 칠곡북삼 지역주택 조합 고문 변호사",
+          "現 삼성전자 주식회사 자문변호사",
+          "現 경북지방노동위원회 권리구제대리인",
+          "現 국가권익위원회 비실명대리신고 자문변호사",
+          "現 중소벤처기업부 불공정거래 신고센터 법률전문위원",
+          "現 경북도청 법률상담관, 보건복지부 산하 행복재단 감사",
+          "現 구미시 법률 상담관",
+          "現 구미시의회 고문변호사",
+          "現 구미교육청 학폭심의위원회 위원장",
+          "現 대구지방 가정법원 김천지원 민사/가사 조정위원회 부회장",
+          "現 구미경찰서 법률상담변호사, 경미범죄심사위원, 여성청소년 지도위원, 아동학대예방 자문의원",
+          "現 법무부 법사랑 위원",
+          "現 경북경찰청 청원심의위원회 위원",
+          "現 경북경찰청 보통징계위원회 위원",
+          "現 금오공과대학교 보통징계위원회 위원",
+          "現 구미 인동농협/산동농협 상담 변호사",
+          "前 법무법인 정인(正人)",
+          "前 삼성전자 주식회사 인사팀",
+          "前 강동 종합법률사무소 대표변호사"
+        ]
+      }
+    ]
+  },
+  {
+    id: "baek-jinwook",
+    name: "백진욱 변호사",
+    modalTitle: "백진욱 변호사",
+    role: "법무법인 로하스 변호사",
+    modalSubtitle: "現 법무법인로하스 변호사",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1777026382/bfb4a67d-9cf5-410b-9338-7f76ed3b73b9-md_qycut4.jpg",
+    desc: "성범죄 및 형사 사건 전문 법률 조력자.",
+    sections: [
+      {
+        heading: "학력",
+        items: [
+          "고려대학교 사회/행정학 전공",
+          "경북대학교 법학전문대학원 졸업"
+        ]
+      },
+      {
+        heading: "경력",
+        items: [
+          "現 법무법인로하스 변호사",
+          "前 한국부동산원변호사"
+        ]
+      }
+    ]
+  },
+  {
+    id: "moon-youngae",
+    name: "문영애 교수",
+    modalTitle: "문영애 교수",
+    role: "상담심리학 박사 / 한국신체심리치료 연구소 대표",
+    modalSubtitle: "상담심리학 박사 · 자아초월상담학 박사 · 성균관대학교 체육학 박사과정 이수",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1779201676/%EB%AC%B8%EC%98%81%EC%95%A0_%EA%B5%90%EC%88%981_q9eo9t.png",
+    desc: "PhD 상담심리학 박사, 펠든크라이스 전문가.",
+    sections: [
+      {
+        heading: "전문 분야",
+        items: [
+          "움직임 치료 · 꿈치료 · 코칭"
+        ]
+      },
+      {
+        heading: "경력 및 주요 활동",
+        items: [
+          "휠든크라이스 수퍼바이저, 상담코치협회 이사, 자기치유 관련 저서 공저",
+          "방송 특강, 움직임 치료, 꿈치료, 기업 강의 및 코칭"
+        ]
+      }
+    ]
+  },
+  {
+    id: "lim-jinsu",
+    name: "임진수 박사",
+    modalTitle: "임진수 박사",
+    role: "정신분석학 박사 / 프로이트 라캉 학회 정신분석가",
+    modalSubtitle: "정신분석학 박사 / 프로이트 라캉 학회 정신분석가",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1793856802/1446168883094_ofcded.jpg",
+    desc: "서울대 박사, 파리 VIII대 정신분석학 DEA, 프로이트 라캉 학회 정신분석가.",
+    sections: [
+      {
+        heading: "설명",
+        items: [
+          "서울대학교 불어교육과를 졸업, 동 대학원 박사학위.",
+          "계명대학교 유럽학과 교수 역임",
+          "프랑스 파리 VIII 대학 정신분석학과에서 DEA를 취득. 박사과정을 수료.",
+          "1995년부터 2003년까지 파리 고등사회과학원(E.H.E.S.S.) 교수인 프랑수아즈 다부안느(Franoise Davoine)에게 교육 분석을 받고, 2002년부터 '프로이트 라캉 학회'를 개설하고 정신분석가로 활동 중."
+        ]
+      },
+      {
+        heading: "저서",
+        items: [
+          "『정신분석 세미나 IV: 환상의 정신분석』, 『정신분석 세미나 Ⅴ: 남근의 의미작용』",
+          "『정신분석 세미나 IX: 네 가지 담화』, 『정신분석 세미나 XI: 위상학적 정신분석』 등 정신분석 세미나 총서 16권"
+        ]
+      },
+      {
+        heading: "역서",
+        items: [
+          "『정신분석사전』(라플랑슈, 퐁탈리스)",
+          "『정신분석의 탄생』(프로이트), 『끝이 있는 분석과 끝이 없는 분석』(프로이트) 등"
+        ]
+      },
+      {
+        heading: "발간예정",
+        items: [
+          "『신경증의 병인』, 『정신분석적 정신치료』, 『세미나 X : 불안』, 『세미나 XX : 앙코르』"
+        ]
+      }
+    ]
+  },
+  {
+    id: "lee-jeseung",
+    name: "이제승 교수",
+    modalTitle: "이제승 교수",
+    role: "IMC 국제마음치유연구원 원장 / 심리상담학과 교수",
+    modalSubtitle: "IMC 국제마음치유연구원 원장 / 심리상담학과 교수",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1779153823/%EC%9D%B4%EC%A0%9C%EC%8A%B9_%EA%B5%90%EC%88%98_gkluyp.jpg",
+    desc: "국제기독대학교 교수, 한국심리상담전문학회 학회장.",
+    sections: [
+      {
+        heading: "주요 경력",
+        items: [
+          "IMC 국제마음치유연구원 원장",
+          "국제기독대학교 심리상담학과 교수",
+          "한국심리상담전문학회 학회장"
+        ]
+      }
+    ]
+  },
+  {
+    id: "yoo-bokyung",
+    name: "유보경 선생님",
+    modalTitle: "유보경 선생님",
+    role: "상담심리 전문가 / 성인지 교육 강사",
+    modalSubtitle: "상담심리 전문가 / 성인지 교육 강사",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1779201666/%EC%9C%A0%EB%B3%B4%EA%B2%BD_%EC%84%A0%EC%83%9D%EB%8B%98_2_lobfoq.png",
+    desc: "성범죄 예방 및 재발 방지를 위한 심리 교육 전문가.",
+    sections: [
+      {
+        heading: "학력",
+        items: [
+          "경북대학교대학원 아동복지과 전공 석사",
+          "경북대학교대학원 아동가족학 전공 박사과정"
+        ]
+      },
+      {
+        heading: "교육 및 수상",
+        items: [
+          "장애아보육도우미교육",
+          "특별직무교육과정(장애아보육과정, 방과후교육과정)",
+          "장애아 보육시설 교사교육(장애유형에 대한 이해 및 지도방법, IEP 함께 작성하기)",
+          "2011년 보육시설 평가인증 참여설명회 및 지도교육",
+          "자원개발을 위한 프로포절 핵심기법",
+          "장애아어린이집 교사교육(장애 영유아 부모의 이해와 지원방법)",
+          "발로 뛰는 희망천사 에세이 ‘최우수상’",
+          "우수교사 해외연수(전국 장애아동 보육시설협의회)",
+          "사회복지인상(사회복지협의회)"
+        ]
+      },
+      {
+        heading: "자격 및 면허",
+        items: [
+          "보육교수 1급, 평생교육사 2급, 사회복지사 2급, 요양보호사 1급",
+          "심리상담사 1급, 발달진단평가 2급, 미술치료사 1급",
+          "NLP프랙티셔너, 최면심리상담사 2급"
+        ]
+      },
+      {
+        heading: "경력 및 주요 활동",
+        items: [
+          "장애전담 어린이집 근무",
+          "장애인복지관 가족소통프로그램 진행",
+          "노인복지관, 요양원 집단상담, 미술치료",
+          "삼성팰리스, MBC생방송 오늘의 아침, 연합뉴스 등 다수 출연",
+          "순천향대학병원·대구가톨릭대학병원 연구원",
+          "어린이문학교육학회 정회원",
+          "한국심리학회 정회원, 임상코디네이터",
+          "이고그램 전문강사 과정",
+          "덴버(6개월), 베일리검사(12, 24, 36개월), 코오트 전문검사요원"
+        ]
+      }
+    ]
+  },
+  {
+    id: "ham-jongsoo",
+    name: "함종수 교수",
+    modalTitle: "함종수 교수",
+    role: "철학박사 · 신학박사 · 심리학박사 / 미국상담심리치료학회(AACPT) 회장",
+    modalSubtitle: "철학박사 · 신학박사 · 심리학박사",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1793856790/professor_wut7ut.png",
+    desc: "미국상담심리치료학회(AACPT) 회장, 애리조나 주립대 철학 교수 역임, LA 시장상 수상.",
+    sections: [
+      {
+        heading: "주요 경력 및 이력",
+        items: [
+          "미국장로교총회(GAPC) 목사",
+          "LA 시장상 수상",
+          "미국상담심리치료학회(AACPT) 회장",
+          "애리조나 주립대 철학교수 역임",
+          "철학박사, 신학박사, 심리학박사"
+        ]
+      }
+    ]
+  },
+  {
+    id: "yoon-songyi",
+    name: "윤송이 선생님",
+    modalTitle: "윤송이 선생님",
+    role: "심리상담 전문가 / 성폭력 예방 교육 강사",
+    modalSubtitle: "심리상담 전문가 / 성폭력 예방 교육 강사",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1779201655/%EC%9C%A4%EC%86%A1%EC%9D%B4_%EC%84%A0%EC%83%9D%EB%8B%98_2_q34upo.png",
+    desc: "임상심리사 2급(국가자격증), 인지행동치료 기반의 성인지 감수성 향상 교육.",
+    sections: [
+      {
+        heading: "학력 및 자격",
+        items: [
+          "경북대학교대학원 심리학 석사",
+          "서불대 신심통합치유학과 뇌인지과학 박사수료",
+          "위로상담가 수료, 청소년상담사 3급",
+          "임상심리사 2급(국가자격증)",
+          "심리상담사 1급, 미술치료사 1급, 요가지도자 1급",
+          "한국상담학회 준회원, NLP프랙티셔너"
+        ]
+      },
+      {
+        heading: "경력 및 주요 활동",
+        items: [
+          "의성군건강가정지원센터 부부 힐링 클리닉",
+          "구미시장애인종합복지관 장애부모자녀 관계 조정",
+          "구미경찰서 전의경 상담",
+          "기업 ㈜성진포머 직원지원프로그램(직원심리상담) 현 진행",
+          "MBC 생방송 오늘의 아침 외 다수 출연",
+          "대구노인종합복지관 황혼육아 양육코칭 강의",
+          "대구 성서경찰서 기동대 폭력의 이해, 수치심/죄책감/열등감 강의",
+          "대구장애인가족지원센터 동료상담가 실습진행",
+          "대룡초등학교, 운암중학교, 의흥초등학교 집단상담"
+        ]
+      }
+    ]
+  },
+  {
+    id: "jeon-kyungsook",
+    name: "전경숙 선생님",
+    modalTitle: "전경숙 선생님",
+    role: "상담심리 전문가 / 중독 상담사 / 성상담사",
+    modalSubtitle: "한국뇌기반심리상담 대표",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1779198673/%EC%A0%84%EA%B2%BD%EC%88%99_%EC%84%A0%EC%83%9D%EB%8B%98_hctbka.png",
+    desc: "성인지 왜곡 및 중독 문제 해결을 위한 전문 심리 상담.",
+    sections: [
+      {
+        heading: "학력",
+        items: [
+          "자초월상담심리학 석사",
+          "명상학 이수",
+          "뇌인지 박사 수료",
+          "Intenational Christian College HONRARY DOCTER EDUCATION (Ed.D) 교육학명예박사"
+        ]
+      },
+      {
+        heading: "주요 경력",
+        items: [
+          "한국뇌기반심리상담 대표",
+          "교육분야 20년 · 청소년 진로 및 발달상담",
+          "조장희박사님과 뇌과학문화운동 대표",
+          "한국상담학회 회원",
+          "아봐타/마스터"
+        ]
+      },
+      {
+        heading: "활동 이력",
+        items: [
+          "2015년 : 박문호박사 뇌과학문화운동 8회차 진행",
+          "2016년~2021년 : 조장희 박사 썸머 진행",
+          "2019년~2021년 : 서초문화원 명상강의",
+          "2022년 : 인천지역 학교상담교사 교육"
+        ]
+      },
+      {
+        heading: "강의 및 프로그램",
+        items: [
+          "뇌상담사 양성과정 강의",
+          "코칭프로그램",
+          "기아, 현대자동차 프로그램 진행",
+          "코오롱기업연수 프로그램 진행",
+          "NAVER 꿈분석 전문상담",
+          "NAVER 명상상담"
+        ]
+      },
+      {
+        heading: "자격",
+        items: [
+          "뇌상담사",
+          "진로상담사",
+          "명상상담"
+        ]
+      }
+    ]
+  },
+  {
+    id: "park-kyungsil",
+    name: "박경실 선생님",
+    modalTitle: "박경실 선생님",
+    role: "상담심리 전문가 / 청소년 상담사",
+    modalSubtitle: "최면상담학 박사 · 심리상담학 석사 · 임상심리사 1급 · 사회복지사 1급 · 청소년상담사 2급",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1779200461/ChatGPT_Image_2026%EB%85%84_5%EC%9B%94_19%EC%9D%BC_%EC%98%A4%ED%9B%84_11_20_53_jagksr.png",
+    desc: "임상심리사 1급(국가자격증), 청소년 및 성인 내담자의 심리적 안정과 긍정적 변화 지원.",
+    sections: [
+      {
+        heading: "학력 및 자격",
+        items: [
+          "최면상담학 박사",
+          "심리상담학 석사",
+          "임상심리사 1급",
+          "사회복지사 1급",
+          "청소년상담사 2급"
+        ]
+      },
+      {
+        heading: "전문 분야",
+        items: [
+          "최면상담 · 청소년상담"
+        ]
+      },
+      {
+        heading: "주요 경력",
+        items: [
+          "병영생활전문상담관",
+          "어세스타",
+          "서울시동부교육청 청소년상담센터",
+          "병영생활전문상담관, 청소년상담센터 관련 활동 경력"
+        ]
+      }
+    ]
+  },
+  {
+    id: "kang-minkyung",
+    name: "강민경 선생님",
+    modalTitle: "강민경 선생님",
+    role: "상담심리 전문가 / 가족학 석사 / 부모, 가족 교육 강사",
+    modalSubtitle: "상담심리 전문가 / 가족학 석사 / 부모, 가족 교육 강사",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1779198673/%EA%B0%95%EB%AF%BC%EA%B2%BD_%EC%84%A0%EC%83%9D%EB%8B%98_2_bganyn.bmp",
+    imgClassName: "object-top origin-top-left scale-[1.06]",
+    desc: "심리 정서적 지지를 통한 자존감 회복 및 재발 방지 상담.",
+    sections: [
+      {
+        heading: "소개",
+        items: [
+          "심리 정서적 지지를 통한 자존감 회복 및 재발 방지 상담."
+        ]
+      },
+      {
+        heading: "학력",
+        items: [
+          "가족학 석사, 미술치료 석사, 뇌인지 박사"
+        ]
+      },
+      {
+        heading: "경력 및 자격",
+        items: [
+          "이든아이아동발달센터 부원장",
+          "미술치료상담원",
+          "한국아동발달지원연구소",
+          "뇌교육사",
+          "임상미술상담사",
+          "진로상담사"
+        ]
+      }
+    ]
+  }
+];
+
 const AboutPage = ({ title, slug }: { title: string; slug: string }) => {
+  const [selectedExpert, setSelectedExpert] = useState<ExpertItem | null>(null);
+
+  useEffect(() => {
+    setSelectedExpert(null);
+  }, [slug]);
+
+  useEffect(() => {
+    if (!selectedExpert) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedExpert(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedExpert]);
+
   if (slug === 'notice') {
     return <NoticePage />;
   }
 
   if (slug === 'activities') {
     return <MediaActivityPage />;
+  }
+
+  if (slug === 'partners') {
+    return <PartnersPage />;
   }
 
   if (slug === 'intro') {
@@ -5813,40 +8086,183 @@ const AboutPage = ({ title, slug }: { title: string; slug: string }) => {
       {slug === 'experts' && (
         <div className="space-y-16">
           <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">성범죄 특화 전문가 그룹</h2>
-            <p className="text-slate-500">단순 심리상담사가 아닌, 구조적 개입과 행동 교정의 전문가들이 함께합니다.</p>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">성범죄 특화 전문가 및 자문위원</h2>
+            <p className="text-slate-500 break-keep">단순 심리상담사가 아닌, 구조적 개입과 행동 교정의 전문가들이 함께합니다.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { 
-                name: "윤영준 원장", 
-                role: "상담학 박사 / 국제 임상최면치료사", 
-                image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346422/ChatGPT_Image_2026%EB%85%84_3%EC%9B%94_1%EC%9D%BC_%EC%98%A4%ED%9B%84_10_34_52_ydee1z.png",
-                desc: "성범죄 상담 경력 10년 이상, 법원 촉탁 상담위원 역임."
-              },
-              { 
-                name: "소윤주 부원장", 
-                role: "기능의학 / 최면 / 성상담 전문가", 
-                image: "https://mhsjoy.mycafe24.com/wp-content/uploads/2024/05/KakaoTalk_20240521_123825759.jpg",
-                desc: "기능의학 기반의 심신 통합 치유 전문가."
-              },
-              { 
-                name: "허선무 변호사", 
-                role: "사법시험 54회 / 성범죄 전문 변호사", 
-                image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346463/member_view23_nnxzhn.jpg",
-                desc: "창원지방법원 조정위원 및 형사조정위원 역임, 성범죄 전문 법률 조력자."
-              }
-            ].map((expert, idx) => (
-              <div key={idx} className="text-center group">
-                <div className="w-48 h-48 rounded-full overflow-hidden mx-auto mb-6 shadow-xl group-hover:scale-105 transition-transform duration-500">
-                  <img src={expert.image} alt={expert.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+
+          {/* Row 1: 윤영준 원장 & 소윤주 부원장 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 max-w-2xl mx-auto">
+            {LEADERSHIP_EXPERTS.map((expert) => (
+              <div key={expert.id} className="text-center group">
+                <Link
+                  to={expert.profilePath || '/about/profile'}
+                  className="block w-44 h-44 sm:w-48 sm:h-48 rounded-full overflow-hidden mx-auto mb-6 shadow-xl bg-slate-50 border border-slate-100 group-hover:scale-105 transition-transform duration-500"
+                >
+                  <img
+                    src={expert.image}
+                    alt={expert.name}
+                    className={`w-full h-full object-cover ${expert.imgClassName || 'object-top'}`}
+                    referrerPolicy="no-referrer"
+                  />
+                </Link>
+                <div className="flex items-center justify-center gap-2 mb-1.5 flex-wrap">
+                  <h3 className="text-xl font-bold text-slate-900">{expert.name}</h3>
+                  <Link
+                    to={expert.profilePath || '/about/profile'}
+                    className="px-2.5 py-0.5 text-[11px] font-bold text-[#4F46E5] bg-indigo-50 hover:bg-[#4F46E5] hover:text-white border border-indigo-200/80 rounded-md transition-colors shrink-0"
+                  >
+                    프로필 보기
+                  </Link>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-1">{expert.name}</h3>
-                <p className="text-sm text-[#4F46E5] font-bold mb-4">{expert.role}</p>
-                <p className="text-xs text-slate-500 leading-relaxed px-8">{expert.desc}</p>
+                <p className="text-sm text-[#4F46E5] font-bold mb-2.5 leading-snug break-keep">{expert.role}</p>
+                <p className="text-xs text-slate-500 leading-relaxed max-w-[260px] mx-auto break-keep">{expert.desc}</p>
               </div>
             ))}
           </div>
+
+          {/* Rows 2-5: 전문가 및 자문위원 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+            {ADVISORY_AND_COUNSELOR_EXPERTS.map((expert) => (
+              <div key={expert.id} className="text-center group">
+                <button
+                  type="button"
+                  onClick={() => setSelectedExpert(expert)}
+                  className="block w-44 h-44 sm:w-48 sm:h-48 rounded-full overflow-hidden mx-auto mb-6 shadow-xl bg-slate-50 border border-slate-100 group-hover:scale-105 transition-transform duration-500 cursor-pointer"
+                  aria-label={`${expert.name} 프로필 보기`}
+                >
+                  <img
+                    src={expert.image}
+                    alt={expert.name}
+                    className={`w-full h-full object-cover ${expert.imgClassName || 'object-top'}`}
+                    referrerPolicy="no-referrer"
+                  />
+                </button>
+                <div className="flex items-center justify-center gap-2 mb-1.5 flex-wrap">
+                  <h3 className="text-xl font-bold text-slate-900">{expert.name}</h3>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedExpert(expert)}
+                    className="px-2.5 py-0.5 text-[11px] font-bold text-[#4F46E5] bg-indigo-50 hover:bg-[#4F46E5] hover:text-white border border-indigo-200/80 rounded-md transition-colors cursor-pointer shrink-0"
+                  >
+                    프로필 보기
+                  </button>
+                </div>
+                <p className="text-sm text-[#4F46E5] font-bold mb-2.5 leading-snug break-keep max-w-[280px] mx-auto">{expert.role}</p>
+                <p className="text-xs text-slate-500 leading-relaxed max-w-[270px] mx-auto break-keep">{expert.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom CTA Buttons */}
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href={NAVER_PLACE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-8 py-4 bg-[#1D4ED8] hover:bg-[#1e40af] text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-100 flex items-center justify-center gap-2.5"
+            >
+              <Calendar className="w-4 h-4" />
+              상담 예약하기
+            </a>
+            <Link
+              to="/about/location"
+              className="w-full sm:w-auto px-8 py-4 bg-[#4F46E5] hover:bg-[#4338ca] text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-2.5"
+            >
+              <MapPin className="w-4 h-4" />
+              오시는 길 안내
+            </Link>
+          </div>
+
+          {/* Expert Detail Popup Modal */}
+          <AnimatePresence>
+            {selectedExpert && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+                onClick={() => setSelectedExpert(null)}
+              >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 12 }}
+                  transition={{ duration: 0.22, ease: "easeOut" }}
+                  className="relative w-full max-w-2xl max-h-[88vh] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Modal Header */}
+                  <div className="relative px-6 py-6 sm:px-8 sm:py-7 bg-slate-50 border-b border-slate-100 flex items-center gap-5">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedExpert(null)}
+                      className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-900 border border-slate-200 flex items-center justify-center transition-colors cursor-pointer"
+                      aria-label="프로필 닫기"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden shrink-0 shadow-lg border-2 border-white bg-white">
+                      <img
+                        src={selectedExpert.image}
+                        alt={selectedExpert.modalTitle || selectedExpert.name}
+                        className={`w-full h-full object-cover ${selectedExpert.imgClassName || 'object-top'}`}
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <div className="pr-8">
+                      <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1.5">
+                        {selectedExpert.modalTitle || selectedExpert.name}
+                      </h3>
+                      <p className="text-sm sm:text-base font-bold text-[#4F46E5] break-keep leading-snug">
+                        {selectedExpert.modalSubtitle || selectedExpert.role}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Modal Body */}
+                  <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8 sm:py-7 space-y-6">
+                    {selectedExpert.sections?.map((section, sIdx) => (
+                      <div key={sIdx} className="space-y-3">
+                        <h4 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                          <span className="w-1 h-5 bg-[#4F46E5] rounded-full inline-block" />
+                          {section.heading}
+                        </h4>
+                        <ul className="space-y-2 text-sm sm:text-[15px] text-slate-600 leading-relaxed pl-3">
+                          {section.items.map((item, iIdx) => (
+                            <li key={iIdx} className="flex items-start gap-2.5 break-keep">
+                              <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">•</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Modal Footer */}
+                  <div className="px-6 py-4 sm:px-8 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
+                    <a
+                      href={NAVER_PLACE_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-5 py-2.5 bg-[#4F46E5] hover:bg-[#4338ca] text-white text-sm font-bold rounded-xl transition-colors flex items-center gap-2"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      상담 예약하기
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedExpert(null)}
+                      className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-700 text-sm font-bold rounded-xl border border-slate-200 transition-colors cursor-pointer"
+                    >
+                      닫기
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
@@ -6107,7 +8523,7 @@ const CounselingProcessPage = () => (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-[40px] overflow-hidden shadow-2xl border-8 border-white">
           <img 
-            src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/238f8462b0008cc95bc664c1596010d9.png" 
+            src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786088923/%EC%84%B1%EB%B2%94%EC%A3%84_%EA%B0%80%ED%95%B4%EC%9E%90_%EC%83%81%EB%8B%B4_%EB%B0%8F_%EC%B9%98%EB%A3%8C_%ED%94%84%EB%A1%9C%EC%84%B8%EC%8A%A4_tveqfl.png" 
             alt="Professional Counseling Session" 
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
@@ -6379,7 +8795,7 @@ const ConfidentialityPage = () => (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-[40px] overflow-hidden shadow-2xl border-8 border-white">
           <img 
-            src="https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/7bf59580a586cf32c4f0c25399919ee9.png" 
+            src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746427/238f8462b0008cc95bc664c1596010d9_tosbht.png" 
             alt="Secure Counseling Environment" 
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
@@ -7741,7 +10157,7 @@ const COLUMN_POSTS = [
     id: "sentencing-material",
     title: "성범죄 가해자의 양형자료로서의 심리치료, 그 진정성의 가치", 
     category: "법률/심리",
-    image: "https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/5c20fe13d89f0e3eed075d6b0ba90a74.png",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746419/5c20fe13d89f0e3eed075d6b0ba90a74_stb2a7.png",
     content: [
       { type: 'text', value: '사건이 발생한 이후 많은 분들이 깊은 혼란과 두려움 속에서 시간을 보내게 됩니다. 수사와 재판 과정은 낯설고, 앞으로 삶이 어떻게 될지에 대한 불안도 커집니다. 이 과정에서 많은 분들이 "양형자료"라는 말을 듣게 됩니다.\n\n양형자료는 재판 과정에서 판사가 피고인의 삶, 태도, 변화 가능성을 이해하는 데 참고하는 자료입니다. 단순히 서류 몇 장으로 만들어지는 것이 아니라, 그 사람이 사건을 어떻게 바라보고 있는지, 어떤 반성과 변화의 과정을 겪고 있는지를 보여주는 중요한 자료입니다.\n\n그중에서도 심리치료와 상담 기록은 매우 중요한 의미를 가집니다.' },
       { type: 'text', value: '하지만 상담을 단순히 "재판에 도움이 되는 서류" 정도로 생각한다면, 그 가치는 절반도 발휘되지 않습니다. 심리치료의 진짜 의미는 처벌을 줄이기 위한 기술이 아니라, 자신을 이해하고 같은 일이 반복되지 않도록 삶의 방향을 바꾸는 과정에 있습니다.' },
@@ -7762,7 +10178,7 @@ const COLUMN_POSTS = [
     title: "성범죄 사건에서 판사가 실제로 보는 것 7가지", 
     subtitle: "재판은 단순히 사건의 사실만 보는 과정이 아닙니다.\n판사는 사건의 내용뿐 아니라 그 사람의 태도, 변화 가능성, 사건 이후의 행동까지 함께 살펴보게 됩니다.",
     category: "법률/심리",
-    image: "https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/78477f2b9e3e7de356790d754d394f12.png",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746433/78477f2b9e3e7de356790d754d394f12_glh9dc.png",
     content: [
       { type: 'text', value: '성범죄 사건을 겪게 되면 많은 사람들이 가장 궁금해하는 질문이 있습니다.\n\n“판사는 무엇을 가장 중요하게 볼까요?”\n\n재판은 단순히 사건의 사실만 보는 과정이 아닙니다.\n판사는 사건의 내용뿐 아니라 그 사람의 태도, 변화 가능성, 사건 이후의 행동까지 함께 살펴보게 됩니다.\n\n실제 많은 사건을 보면 판사가 중요하게 보는 요소에는 몇 가지 공통적인 부분이 있습니다.' },
       { type: 'header', value: '1. 사건의 구체적인 내용' },
@@ -7790,7 +10206,7 @@ const COLUMN_POSTS = [
     title: "수사 단계에서 심리상담이 중요한 이유", 
     subtitle: "성범죄 사건이 발생하면 대부분의 사람들은 먼저 법적인 문제에 집중하게 됩니다. 하지만 수사 단계에서 상담을 시작하는 것이 훨씬 의미 있는 경우가 많습니다.",
     category: "수사 대응",
-    image: "https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/be87f24080fec71969109cbf32b4e081.png",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786093185/%EC%88%98%EC%82%AC_%EB%8B%A8%EA%B3%84%EC%97%90%EC%84%9C_%EC%8B%AC%EB%A6%AC%EC%83%81%EB%8B%B4%EC%9D%B4_%EC%A4%91%EC%9A%94%ED%95%9C_%EC%9D%B4%EC%9C%A0_mfglw2.png",
     content: [
       { type: 'text', value: '성범죄 사건이 발생하면 대부분의 사람들은 먼저 법적인 문제에 집중하게 됩니다. 변호사를 선임하고, 조사에 대비하고, 앞으로 재판이 어떻게 진행될지 걱정하게 됩니다. 그래서 많은 분들이 이렇게 생각합니다.\n\n"상담은 재판 전에 양형자료 준비할 때 받으면 되는 것 아닌가요?"\n\n하지만 실제 상담 현장에서 보면 수사 단계에서 상담을 시작하는 것이 훨씬 의미 있는 경우가 많습니다.\n\n왜냐하면 수사 단계는 단순히 사건이 진행되는 시간이 아니라, 자신의 삶과 행동을 정리해야 하는 가장 중요한 시기이기 때문입니다.' },
       { type: 'header', value: '1. 수사 단계는 가장 혼란스러운 시기입니다' },
@@ -7810,7 +10226,7 @@ const COLUMN_POSTS = [
     title: "성범죄는 왜 반복되는가", 
     subtitle: "행동 뒤에 숨겨진 심리적 메커니즘\n“멈추고 싶지만 반복되는 이유”",
     category: "심리 분석",
-    image: "https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/796d18ec61eaf3bd47cfd442a68b326a.png",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1774346314/ChatGPT_Image_2026%EB%85%84_3%EC%9B%94_6%EC%9D%BC_%EC%98%A4%ED%9B%84_05_45_25_y2cxol.png",
     content: [
       { type: 'text', value: '성범죄 사건을 상담하다 보면 많은 사람들이 비슷한 이야기를 합니다.\n\n“저도 왜 그런 행동을 했는지 잘 모르겠습니다.”\n“그 순간에는 그렇게까지 큰 문제가 될 거라고 생각하지 못했습니다.”\n“지금 생각해 보면 왜 그랬는지 이해가 안 됩니다.”\n\n이 말은 단순한 변명이 아니라, 실제로 많은 사람들이 자신의 행동을 정확히 이해하지 못한 채 행동했다는 사실을 보여줍니다.\n\n성범죄는 단순히 한 번의 선택으로만 설명되기 어려운 경우가 많습니다.\n그 뒤에는 여러 심리적 요인이 복합적으로 작용하는 구조가 존재합니다.' },
       { type: 'header', value: '1. 순간적인 충동과 판단의 흐려짐' },
@@ -7832,7 +10248,7 @@ const COLUMN_POSTS = [
     title: "디지털 성범죄 가해자의 인지 왜곡과 교정 방향", 
     subtitle: "디지털 성범죄, “나는 그렇게까지 나쁜 사람은 아니다”라는 생각에서 시작됩니다",
     category: "디지털 성범죄",
-    image: "https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/a097200e74874a98b864261e7a3ab6c5.jpg",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1786094749/%EB%94%94%EC%A7%80%ED%84%B8_%EC%84%B1%EB%B2%94%EC%A3%84_%EC%82%BD%ED%99%94_df0zyb.png",
     content: [
       { type: 'text', value: '디지털 성범죄로 조사를 받거나, 이미 처벌을 경험하신 분들 중 상당수는 이렇게 말합니다.\n“그냥 호기심이었다.”\n“다들 보는 줄 알았다.”\n“실제 만난 것도 아닌데 그렇게 큰 문제인가요?”\n“저는 피해를 줄 생각은 없었습니다.”\n이 말들은 변명이 아니라, 그 당시 당신의 진짜 생각이었을 가능성이 큽니다.\n그리고 바로 그 지점이, 우리가 함께 들여다봐야 할 ‘인지 왜곡’의 출발점입니다.' },
       { type: 'header', value: '1. 디지털 성범죄 가해자의 ‘인지 왜곡’이란 무엇인가' },
@@ -7855,7 +10271,7 @@ const COLUMN_POSTS = [
     id: "family-support",
     title: "가족의 지지가 재범 방지에 미치는 영향", 
     category: "가족 상담",
-    image: "https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/e1c1a882b51b29c3b836a615b1f12eea.png",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746413/e1c1a882b51b29c3b836a615b1f12eea_b4r2dn.png",
     content: [
       { type: 'text', value: '성범죄 사건 이후 많은 분들이 깊은 혼란과 두려움 속에 시간을 보내게 됩니다. 사건 자체도 충격이지만, 그 이후의 삶이 어떻게 될지에 대한 불안이 더 크게 다가오기도 합니다. 이 과정에서 가장 중요한 요소 중 하나가 바로 가족의 지지입니다.' },
       { type: 'header', value: '사건 이후의 심리 상태' },
@@ -7874,7 +10290,7 @@ const COLUMN_POSTS = [
     id: "impulse-correlation",
     title: "충동 조절 장애와 성범죄의 상관관계", 
     category: "정신건강",
-    image: "https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/c8e33c77f1c750bb6cd1ce25a6b907f1.png",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746410/c8e33c77f1c750bb6cd1ce25a6b907f1_almtmf.png",
     content: [
       { type: 'text', value: '많은 성범죄 사건을 상담 현장에서 만나면서 공통적으로 발견되는 특징 중 하나는 ‘충동을 조절하는 어려움’입니다. 물론 모든 사건이 동일한 원인에서 발생하는 것은 아닙니다. 하지만 순간적인 욕구나 자극을 통제하지 못하는 문제는 여러 사건에서 중요한 심리적 배경으로 나타납니다.' },
       { type: 'text', value: '충동은 인간이라면 누구나 경험합니다. 어떤 이미지를 보거나, 특정한 상황에 놓이거나, 감정이 강하게 올라올 때 순간적인 욕구가 생길 수 있습니다. 문제는 충동 자체가 아니라 그 충동을 어떻게 다루느냐입니다.' },
@@ -7898,7 +10314,7 @@ const COLUMN_POSTS = [
     id: "post-trauma-anxiety",
     title: "성범죄 사건 이후 불안과 공포가 계속되는 이유", 
     category: "심리 상담",
-    image: "https://9tsiiw6i9140.edge.naverncp.com/files/sgrsoft/202603/9b2da1459e997e0abd235c1aa8eb29c2.png",
+    image: "https://res.cloudinary.com/dxjz9ksjg/image/upload/v1785746426/9b2da1459e997e0abd235c1aa8eb29c2_w8zj4i.png",
     content: [
       { type: 'text', value: '성범죄 사건에 연루된 이후 많은 사람들이 비슷한 이야기를 합니다.\n\n"잠을 제대로 못 잡니다."\n"계속 사건 생각이 납니다."\n"앞으로 어떻게 될지 모르겠어서 너무 불안합니다."\n\n사건 이후 느끼는 불안과 공포는 단순한 걱정 수준을 넘어서는 경우가 많습니다. 수사, 재판, 사회적 시선, 가족 문제 등 여러 요소가 동시에 작용하면서 심리적으로 매우 큰 압박을 경험하게 됩니다.\n\n상담 현장에서 보면 많은 분들이 사건 이후 특정한 심리 패턴을 경험합니다.' },
       { type: 'header', value: '1. 계속 반복되는 생각' },
@@ -8357,11 +10773,15 @@ const MediaArchive = () => {
 
 const ArchivePage = ({ title, slug }: { title: string; slug: string }) => {
   const [activeTest, setActiveTest] = useState<string | null>(null);
-  const [activePost, setActivePost] = useState<typeof COLUMN_POSTS[0] | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activePostId = slug === 'column' ? searchParams.get('post') : null;
+  const activePost = activePostId
+    ? COLUMN_POSTS.find((post) => post.id === activePostId) || null
+    : null;
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [activeTest, activePost, slug]);
+  }, [activeTest, activePostId, slug]);
 
   return (
     <motion.div 
@@ -8380,7 +10800,9 @@ const ArchivePage = ({ title, slug }: { title: string; slug: string }) => {
               <button 
                 onClick={() => {
                   setActiveTest(null);
-                  setActivePost(null);
+                  if (activePost) {
+                    setSearchParams({});
+                  }
                 }}
                 className={`p-2 rounded-full border transition-colors ${slug === 'media' ? 'bg-white/10 border-white/20 text-white hover:bg-white/20' : 'bg-white border-slate-200 text-slate-600 hover:text-[#4F46E5]'}`}
               >
@@ -8473,7 +10895,7 @@ const ArchivePage = ({ title, slug }: { title: string; slug: string }) => {
             <div 
               key={idx} 
               className="group cursor-pointer"
-              onClick={() => post.content && setActivePost(post)}
+              onClick={() => post.content && setSearchParams({ post: post.id })}
             >
               <div className="aspect-video rounded-3xl bg-slate-100 mb-6 overflow-hidden relative">
                 <img 
@@ -8608,7 +11030,7 @@ const ApplicationPage = () => {
 };
 
 const HomePopupModal = () => {
-  const [activePopup, setActivePopup] = useState<'none' | 'first' | 'second'>('none');
+  const [activePopup, setActivePopup] = useState<'none' | 'first' | 'second' | 'third'>('none');
   const overlayRef = React.useRef<HTMLDivElement>(null);
 
   const isPopupAllowed = (storageKey: string) => {
@@ -8625,11 +11047,13 @@ const HomePopupModal = () => {
       setActivePopup('first');
     } else if (isPopupAllowed('hide_home_popup_2_until')) {
       setActivePopup('second');
+    } else if (isPopupAllowed('hide_home_popup_3_until')) {
+      setActivePopup('third');
     }
   }, []);
 
   useEffect(() => {
-    if (activePopup === 'second' && overlayRef.current) {
+    if ((activePopup === 'second' || activePopup === 'third') && overlayRef.current) {
       overlayRef.current.scrollTop = 0;
     }
   }, [activePopup]);
@@ -8647,6 +11071,8 @@ const HomePopupModal = () => {
   const handleCloseFirst = () => {
     if (isPopupAllowed('hide_home_popup_2_until')) {
       setActivePopup('second');
+    } else if (isPopupAllowed('hide_home_popup_3_until')) {
+      setActivePopup('third');
     } else {
       setActivePopup('none');
     }
@@ -8658,11 +11084,24 @@ const HomePopupModal = () => {
   };
 
   const handleCloseSecond = () => {
-    setActivePopup('none');
+    if (isPopupAllowed('hide_home_popup_3_until')) {
+      setActivePopup('third');
+    } else {
+      setActivePopup('none');
+    }
   };
 
   const handleHideTodaySecond = () => {
     saveHideToday('hide_home_popup_2_until');
+    handleCloseSecond();
+  };
+
+  const handleCloseThird = () => {
+    setActivePopup('none');
+  };
+
+  const handleHideTodayThird = () => {
+    saveHideToday('hide_home_popup_3_until');
     setActivePopup('none');
   };
 
@@ -8677,7 +11116,11 @@ const HomePopupModal = () => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto"
-          onClick={activePopup === 'first' ? handleCloseFirst : handleCloseSecond}
+          onClick={() => {
+            if (activePopup === 'first') handleCloseFirst();
+            else if (activePopup === 'second') handleCloseSecond();
+            else handleCloseThird();
+          }}
         >
           <AnimatePresence mode="wait">
             {activePopup === 'first' && (
@@ -8769,13 +11212,29 @@ const HomePopupModal = () => {
                 </button>
 
                 {/* Second Popup Image Area - Zero outer whitespace */}
-                <div className="w-full block overflow-hidden relative">
+                <Link
+                  to="/about/activities"
+                  onClick={() => setActivePopup('none')}
+                  className="w-full block overflow-hidden group relative"
+                >
                   <img
                     src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1792067983/%EC%A3%BC%EC%9A%94_%EB%B0%A9%EC%86%A1_%EC%96%B8%EB%A1%A0_%EA%B0%95%EC%A1%B0_%EC%83%81%EB%8B%B4%EC%84%BC%ED%84%B0_%ED%8F%AC%EC%8A%A4%ED%84%B0_e6ln84.png"
                     alt="창원성범죄심리상담센터 주요 방송 언론 소개"
-                    className="w-full h-auto block"
+                    className="w-full h-auto block transition-transform duration-300 group-hover:scale-[1.01]"
                     referrerPolicy="no-referrer"
                   />
+                </Link>
+
+                {/* CTA Button: 방송 출연, 강연 기록 보기 */}
+                <div className="p-3 sm:p-4 pb-2 bg-white">
+                  <Link
+                    to="/about/activities"
+                    onClick={() => setActivePopup('none')}
+                    className="w-full py-3 sm:py-3.5 px-4 bg-[#0F4C3A] hover:bg-[#0B3A2C] text-white font-bold text-sm sm:text-base rounded-2xl transition-all shadow-lg shadow-emerald-950/15 flex items-center justify-center gap-2 group active:scale-[0.98]"
+                  >
+                    방송 출연, 강연 기록 보기
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
                 </div>
 
                 {/* Bottom Bar: 오늘 하루 보지 않기 & 닫기 */}
@@ -8790,6 +11249,72 @@ const HomePopupModal = () => {
                   <button
                     type="button"
                     onClick={handleCloseSecond}
+                    className="font-bold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-slate-200/60"
+                  >
+                    닫기
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {activePopup === 'third' && (
+              <motion.div
+                key="third-popup"
+                initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+                className="relative w-full max-w-[340px] sm:max-w-[400px] md:max-w-[460px] lg:max-w-[540px] xl:max-w-[560px] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden my-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Top Close Icon */}
+                <button
+                  type="button"
+                  onClick={handleCloseThird}
+                  className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-slate-900/50 hover:bg-slate-900/75 text-white flex items-center justify-center transition-all backdrop-blur-xs cursor-pointer shadow-md"
+                  aria-label="닫기"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                {/* Third Popup Image Area - Zero outer whitespace */}
+                <Link
+                  to="/about/experts"
+                  onClick={handleCloseThird}
+                  className="w-full block overflow-hidden group relative"
+                >
+                  <img
+                    src="https://res.cloudinary.com/dxjz9ksjg/image/upload/v1794923093/C%EC%95%88_%EC%84%B1%EB%B2%94%EC%A3%84%EC%8B%AC%EB%A6%AC%EC%83%81%EB%8B%B4%EC%84%BC%ED%84%B0%EC%B0%BD%EC%9B%90_2x_rlcyph.png"
+                    alt="성범죄심리상담치료센터창원 상담전문가 안내"
+                    className="w-full h-auto block transition-transform duration-300 group-hover:scale-[1.01]"
+                    referrerPolicy="no-referrer"
+                  />
+                </Link>
+
+                {/* CTA Button: 상담전문가 보기 */}
+                <div className="p-3 sm:p-4 pb-2 bg-white">
+                  <Link
+                    to="/about/experts"
+                    onClick={handleCloseThird}
+                    className="w-full py-3 sm:py-3.5 px-4 bg-[#4F46E5] hover:bg-[#4338ca] text-white font-bold text-sm sm:text-base rounded-2xl transition-all shadow-lg shadow-indigo-100 flex items-center justify-center gap-2 group active:scale-[0.98]"
+                  >
+                    상담전문가 보기
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </div>
+
+                {/* Bottom Bar: 오늘 하루 보지 않기 & 닫기 */}
+                <div className="px-4 py-2.5 sm:py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                  <button
+                    type="button"
+                    onClick={handleHideTodayThird}
+                    className="hover:text-slate-900 transition-colors flex items-center gap-1.5 cursor-pointer py-1 font-medium"
+                  >
+                    오늘 하루 보지 않기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCloseThird}
                     className="font-bold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer py-1 px-2.5 rounded-lg hover:bg-slate-200/60"
                   >
                     닫기
@@ -8868,6 +11393,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             {/* About Routes */}
+            <Route path="/partners" element={<PartnersPage />} />
             {NAV_STRUCTURE[0].children?.map(child => (
               <React.Fragment key={child.href}>
                 <Route 
